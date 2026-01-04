@@ -347,13 +347,20 @@
       });
 
       function viewExpenseDetails(title, category, amount, time) {
-        // This creates a cleaner popup than a standard alert
+        // This formats the number with commas (e.g., 50,000) for a better look
+        const formattedAmount = new Intl.NumberFormat("en-UG").format(amount);
+
         const detailMsg = `
-        📌 Entry: ${title}
+        📊 TRANSACTION RECEIPT
+        --------------------------
+        📝 Description: ${title}
         🏷️ Category: ${category}
-        💰 Amount: UGX ${Number(amount).toLocaleString()}
-        ⏰ Recorded: ${time}
-    `;
+        💰 Amount: UGX ${formattedAmount}
+        ⏰ Date/Time: ${time}
+        --------------------------
+        Status: ✅ Transaction Verified
+            `;
+
         alert(detailMsg);
       }
     </script>
