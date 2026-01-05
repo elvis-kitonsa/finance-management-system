@@ -172,8 +172,8 @@
         <h5 class="fw-bold mb-0">FinanceFlow | Dashboard</h5>
         <div class="d-flex align-items-center gap-3">
           <div class="text-end d-none d-md-block">
-            <small class="text-muted d-block">Friday</small>
-            <span class="fw-bold small">Jan 04, 2026</span>
+            <small class="text-muted d-block" id="current-day">Loading...</small>
+            <span class="fw-bold small" id="current-date">Loading...</span>
           </div>
           <div class="vr mx-2"></div>
           <img src="https://ui-avatars.com/api/?name=User&background=4361ee&color=fff" class="rounded-circle" width="42" />
@@ -385,6 +385,24 @@
 
         alert(detailMsg);
       }
+
+      function updateLiveDate() {
+        const now = new Date();
+
+        // Formats: "Monday" and "Jan 05, 2026"
+        const dayName = now.toLocaleDateString("en-US", { weekday: "long" });
+        const dateStr = now.toLocaleDateString("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        });
+
+        document.getElementById("current-day").textContent = dayName;
+        document.getElementById("current-date").textContent = dateStr;
+      }
+
+      // Initialize the date on page load
+      document.addEventListener("DOMContentLoaded", updateLiveDate);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
