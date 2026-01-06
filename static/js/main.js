@@ -169,22 +169,51 @@ function handleRowClick(row) {
   modalInstance.show();
 }
 
-async function deleteExpense() {
-  const expenseId = document.getElementById("modalExpenseId").value;
+// NEW: Logic to switch between Receipt and Confirmation views
+function toggleDeleteConfirm(isConfirming) {
+  const receiptView = document.getElementById("receipt-view");
+  const confirmView = document.getElementById("confirm-view");
+  const receiptFooter = document.getElementById("receipt-footer-btns");
+  const confirmFooter = document.getElementById("confirm-footer-btns");
 
-  if (confirm("Are you sure you want to delete this expense? This will reimburse your balance.")) {
-    try {
-      const response = await fetch(`/delete_expense/${expenseId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        window.location.reload(); // Refresh to update card balances
-      } else {
-        alert("Error deleting expense.");
-      }
-    } catch (error) {
-      console.error("Delete failed:", error);
-    }
+  if (isConfirming) {
+    // Hide receipt, show confirmation
+    receiptView.classList.add("d-none");
+    receiptFooter.classList.add("d-none");
+    confirmView.classList.remove("d-none");
+    confirmFooter.classList.remove("d-none");
+  } else {
+    // Hide confirmation, show receipt
+    receiptView.classList.remove("d-none");
+    receiptFooter.classList.remove("d-none");
+    confirmView.classList.add("d-none");
+    confirmFooter.classList.add("d-none");
   }
 }
+
+// NEW: The actual deletion logic that communicates with Flask
+async function executeDelete() {
+  const expenseId = document.getElementById("modalExpenseId").value;
+
+  try {
+    const response = await fetch(`/delete_expense/${expenseId}`, {
+      method: "DELETE", // Ensure this matches your route in app.py
+    });
+
+    if (response.ok) {
+      window.location.reload(); // Success! Refresh to update UI and totals
+    } else {
+      const errorData = await response.json();
+      alert("Error: " + (errorData.message || "Failed to delete expense."));
+    }
+  } catch (error) {
+    console.error("Delete failed:", error);
+    alert("Network error. Could not connect to the server.");
+  }
+}
+
+// IMPORTANT: Add this to reset the modal view whenever it's closed
+// This ensures that next time you open a receipt, it doesn't stay on the "Are you sure" screen
+document.getElementById("expenseDetailModal").addEventListener("hidden.bs.modal", function () {
+  toggleDeleteConfirm(false);
+});

@@ -278,35 +278,54 @@
             <h5 class="fw-bold text-dark mb-0">Transaction Receipt</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+
           <div class="modal-body">
-            <div class="text-center mb-4">
-              <div class="status-badge-container">
-                <i class="bi bi-check-circle-fill text-success fs-1"></i>
+            <div id="receipt-view">
+              <div class="text-center mb-4">
+                <div class="status-badge-container">
+                  <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                </div>
+                <div class="fw-bold fs-4" id="modalAmount">UGX 0</div>
+                <div class="text-muted small text-uppercase">Transaction Verified</div>
               </div>
-              <div class="fw-bold fs-4" id="modalAmount">UGX 0</div>
-              <div class="text-muted small" id="modalStatusText text-uppercase">Transaction Verified</div>
+
+              <div class="detail-list">
+                <div class="detail-item">
+                  <span class="label"><i class="bi bi-pencil-square me-2"></i>Description</span>
+                  <span class="value fw-medium" id="modalDescription">-</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label"><i class="bi bi-tag me-2"></i>Category</span>
+                  <span class="value" id="modalCategory">-</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label"><i class="bi bi-calendar3 me-2"></i>Date & Time</span>
+                  <span class="value" id="modalDateTime">-</span>
+                </div>
+              </div>
             </div>
 
-            <!-- Card Display for Listed Expenses | For items that have been added to the List -->
-            <div class="detail-list">
-              <div class="detail-item">
-                <span class="label"><i class="bi bi-pencil-square me-2"></i>Description</span>
-                <span class="value fw-medium" id="modalDescription">-</span>
+            <div id="confirm-view" class="d-none text-center py-4">
+              <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-3 mb-3">
+                <i class="bi bi-exclamation-triangle-fill fs-2"></i>
               </div>
-              <div class="detail-item">
-                <span class="label"><i class="bi bi-tag me-2"></i>Category</span>
-                <span class="value" id="modalCategory">-</span>
-              </div>
-              <div class="detail-item">
-                <span class="label"><i class="bi bi-calendar3 me-2"></i>Date & Time</span>
-                <span class="value" id="modalDateTime">-</span>
-              </div>
+              <h5 class="fw-bold">Delete Expense?</h5>
+              <p class="text-muted small px-4">This will permanently remove this record and reimburse your balance.</p>
             </div>
           </div>
+
           <div class="modal-footer border-0 d-flex gap-2">
             <input type="hidden" id="modalExpenseId" value="" />
-            <button type="button" class="btn btn-outline-danger rounded-pill fw-bold flex-grow-1" onclick="deleteExpense()"><i class="bi bi-trash3 me-2"></i>Delete Expense</button>
-            <button type="button" class="btn btn-light rounded-pill fw-bold flex-grow-1" data-bs-dismiss="modal">Close</button>
+
+            <div id="receipt-footer-btns" class="w-100 d-flex gap-2">
+              <button type="button" class="btn btn-outline-danger rounded-pill fw-bold flex-grow-1" onclick="toggleDeleteConfirm(true)"><i class="bi bi-trash3 me-2"></i>Delete</button>
+              <button type="button" class="btn btn-light rounded-pill fw-bold flex-grow-1" data-bs-dismiss="modal">Close</button>
+            </div>
+
+            <div id="confirm-footer-btns" class="w-100 d-flex gap-2 d-none">
+              <button type="button" class="btn btn-danger rounded-pill fw-bold flex-grow-1" onclick="executeDelete()">Yes, Delete</button>
+              <button type="button" class="btn btn-light rounded-pill fw-bold flex-grow-1" onclick="toggleDeleteConfirm(false)">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
