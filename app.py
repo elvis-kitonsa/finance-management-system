@@ -106,6 +106,29 @@ def delete_expense(expense_id):
         db.session.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# Update description with new content set in the Transaction Receipt card
+# This is the card that pops up when you click on an already registered expense in the dashboard list
+
+@app.route('/update_expense_description/<int:expense_id>', methods=['POST'])
+def update_expense_description(expense_id):
+    data = request.get_json()
+    new_title = data.get('title')
+    
+    # 1. Find the expense in the database
+    expense = Expense.query.get_or_404(expense_id)
+
+    if new_title:
+        # 2. Update the title/description field
+        expense.title = new_title
+    
+        try:
+            # 3. Save changes
+            db.session.commit()
+            return jsonify({"status": "success", "message": "Description updated"}), 200
+        except Exception as e:
+            db.session.rollback()
+    return jsonify({"status": "error", "message": str(e)}), 500
+
 # --- DATABASE INITIALIZATION ---
 
 with app.app_context():

@@ -61,8 +61,50 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-});
 
+  // --- INTEGRATED SECTION 8: INLINE EDITING ---
+  // This must stay inside DOMContentLoaded to find the icon on load
+  // The icon we are talking about here is the pen-in-paper icon attached to Description in the
+  // Transaction Receipt that pops up when a registered expense is clicked on.
+  const editIcon = document.getElementById("enable-edit-desc");
+  if (editIcon) {
+    editIcon.addEventListener("click", function () {
+      const container = document.getElementById("description-edit-container");
+      const displaySpan = document.getElementById("modalDescription");
+      const currentText = displaySpan.innerText;
+      const expenseId = document.getElementById("modalExpenseId").value;
+
+      if (document.getElementById("inline-edit-input")) return;
+
+      container.innerHTML = `
+    <div class="input-group input-group-sm w-100">
+        <input type="text" class="form-control" id="inline-edit-input" value="${currentText}">
+        <button class="btn btn-success" type="button" id="save-inline-btn"><i class="bi bi-check-lg"></i></button>
+        <button class="btn btn-light" type="button" id="cancel-inline-btn"><i class="bi bi-x-lg"></i></button>
+    </div>
+`;
+
+      document.getElementById("save-inline-btn").onclick = async function () {
+        const newText = document.getElementById("inline-edit-input").value;
+        try {
+          const response = await fetch(`/update_expense_description/${expenseId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: newText }),
+          });
+          if (response.ok) window.location.reload();
+        } catch (error) {
+          console.error("Update failed:", error);
+        }
+      };
+
+      document.getElementById("cancel-inline-btn").onclick = function () {
+        container.innerHTML = "";
+        container.appendChild(displaySpan);
+      };
+    });
+  }
+});
 /** * --- GLOBAL FUNCTIONS ---
  * These are defined outside the listener so HTML 'onclick' can trigger them.
  */
@@ -216,6 +258,14 @@ async function executeDelete() {
 // This ensures that next time you open a receipt, it doesn't stay on the "Are you sure" screen
 document.getElementById("expenseDetailModal").addEventListener("hidden.bs.modal", function () {
   toggleDeleteConfirm(false);
+
+  // CLEANUP: If the user was editing and closed the modal, put the text back
+  const container = document.getElementById("description-edit-container");
+  const displaySpan = document.getElementById("modalDescription");
+  if (container && displaySpan && document.getElementById("inline-edit-input")) {
+    container.innerHTML = "";
+    container.appendChild(displaySpan);
+  }
 });
 
 // 7. BALANCE RESET CONFIRMATION LOGIC

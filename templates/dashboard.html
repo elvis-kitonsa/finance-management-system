@@ -307,8 +307,14 @@
 
               <div class="detail-list">
                 <div class="detail-item">
-                  <span class="label"><i class="bi bi-pencil-square me-2"></i>Description</span>
-                  <span class="value fw-medium" id="modalDescription">-</span>
+                  <!-- Fixating the Edit Description feature to the Description section in Transaction Receipt -->
+                  <span class="label">
+                    <i class="bi bi-pencil-square me-2 text-primary" id="enable-edit-desc" style="cursor: pointer" title="Click to edit"></i>
+                    Description
+                  </span>
+                  <div id="description-edit-container" class="d-flex align-items-center">
+                    <span class="value fw-medium" id="modalDescription">-</span>
+                  </div>
                 </div>
                 <div class="detail-item">
                   <span class="label"><i class="bi bi-tag me-2"></i>Category</span>
