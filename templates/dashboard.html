@@ -150,7 +150,16 @@
             </thead>
             <tbody>
               {% for expense in expenses %}
-              <tr class="align-middle border-bottom" style="cursor: pointer" data-title="{{ expense.title }}" data-category="{{ expense.category }}" data-amount="{{ expense.amount }}" data-date="{{ expense.date_to_handle.strftime('%d %b, %Y') }}" onclick="handleRowClick(this)">
+              <tr
+                class="align-middle border-bottom"
+                style="cursor: pointer"
+                data-id="{{ expense.id }}"
+                data-title="{{ expense.title }}"
+                data-category="{{ expense.category }}"
+                data-amount="{{ expense.amount }}"
+                data-date="{{ expense.date_to_handle.strftime('%d %b, %Y') }}"
+                onclick="handleRowClick(this)"
+              >
                 <td class="ps-4 py-3">
                   <div class="d-flex flex-column">
                     <span class="fw-bold text-dark">{{ expense.title }}</span>
@@ -294,8 +303,10 @@
               </div>
             </div>
           </div>
-          <div class="modal-footer border-0">
-            <button type="button" class="btn btn-light w-100 rounded-pill fw-bold" data-bs-dismiss="modal">Close Receipt</button>
+          <div class="modal-footer border-0 d-flex gap-2">
+            <input type="hidden" id="modalExpenseId" value="" />
+            <button type="button" class="btn btn-outline-danger rounded-pill fw-bold flex-grow-1" onclick="deleteExpense()"><i class="bi bi-trash3 me-2"></i>Delete Expense</button>
+            <button type="button" class="btn btn-light rounded-pill fw-bold flex-grow-1" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>

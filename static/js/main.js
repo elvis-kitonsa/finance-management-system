@@ -147,6 +147,7 @@ function showExpenseDetails(description, category, amount, status, dateTime) {
 
 function handleRowClick(row) {
   // 1. Extract data
+  const id = row.getAttribute("data-id"); // Capture the ID
   const title = row.getAttribute("data-title");
   const category = row.getAttribute("data-category");
   const amount = row.getAttribute("data-amount");
@@ -156,6 +157,7 @@ function handleRowClick(row) {
   const formattedAmount = "UGX " + Number(amount).toLocaleString();
 
   // 3. Update Modal Text
+  document.getElementById("modalExpenseId").value = id; // Store ID in the hidden input
   document.getElementById("modalDescription").innerText = title;
   document.getElementById("modalCategory").innerText = category;
   document.getElementById("modalAmount").innerText = formattedAmount;
@@ -165,4 +167,24 @@ function handleRowClick(row) {
   const modalElement = document.getElementById("expenseDetailModal");
   const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
   modalInstance.show();
+}
+
+async function deleteExpense() {
+  const expenseId = document.getElementById("modalExpenseId").value;
+
+  if (confirm("Are you sure you want to delete this expense? This will reimburse your balance.")) {
+    try {
+      const response = await fetch(`/delete_expense/${expenseId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        window.location.reload(); // Refresh to update card balances
+      } else {
+        alert("Error deleting expense.");
+      }
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  }
 }

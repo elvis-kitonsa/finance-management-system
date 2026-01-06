@@ -78,6 +78,33 @@ def add_expense():
             
     return jsonify({"status": "error", "message": "User not found"}), 404
 
+@app.route('/delete_expense/<int:expense_id>', methods=['DELETE'])
+def delete_expense(expense_id):
+    # 1. Find the expense in the database
+    expense = Expense.query.get_or_404(expense_id)
+    user = User.query.get(expense.user_id) # Or current_user if using Flask-Login
+
+    try:
+        # 2. Perform the Reversal Logic
+        # Add the money back to the total balance
+        user.total_balance += expense.amount
+        
+        # Subtract the money from total spent
+        user.total_spent -= expense.amount
+        
+        # The 'Amount Remaining' is usually a calculated field in the UI, 
+        # so it will update automatically on refresh.
+
+        # 3. Delete the record
+        db.session.delete(expense)
+        db.session.commit()
+
+        return jsonify({"status": "success", "message": "Expense reimbursed and deleted"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # --- DATABASE INITIALIZATION ---
 
 with app.app_context():
