@@ -29,16 +29,20 @@
           <input type="email" name="email" class="form-control border-start-0 py-2" placeholder="name@email.com" id="emailInput" />
         </div>
 
+        <!--Phone Container - includes a drop down for all the country codes of various countries and a close out button to delete typed text -->
         <div id="phoneContainer" class="input-group input-group-merge shadow-sm rounded-4 d-none">
           <button class="btn btn-white border-end-0 dropdown-toggle text-dark fw-bold" type="button" data-bs-toggle="dropdown" id="activeCode" style="border-top-left-radius: 15px; border-bottom-left-radius: 15px; font-size: 0.9rem">+256</button>
 
           <ul class="dropdown-menu shadow border-0 p-2" id="countryList" style="max-height: 250px; overflow-y: auto; width: 280px">
-            <div class="px-2 pb-2 border-bottom mb-2">
-              <input type="text" class="form-control form-control-sm rounded-pill" id="countrySearch" placeholder="Search country..." onkeyup="filterCountries()" />
+            <div class="px-3 pb-2 border-bottom mb-2 position-relative">
+              <input type="text" class="form-control form-control-sm rounded-pill pe-5 shadow-none" id="countrySearch" placeholder="Search country..." onkeyup="filterCountries()" style="background-color: #f1f5f9; border: none; height: 35px; font-size: 0.85rem" />
+
+              <span id="clearSearch" class="position-absolute d-none" onclick="clearCountrySearch()" style="right: 25px; top: 43%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; line-height: 1">
+                <i data-lucide="circle-x" size="16"></i>
+              </span>
             </div>
             <div id="countryItems">
-              <li><a class="dropdown-item" href="javascript:void(0)" onclick="setCode('+256')">🇺🇬 +256 (Uganda)</a></li>
-              <li><a class="dropdown-item" href="javascript:void(0)" onclick="setCode('+254')">🇰🇪 +254 (Kenya)</a></li>
+              <li class="text-center py-2"><small class="text-muted">Loading countries...</small></li>
             </div>
           </ul>
 
@@ -98,13 +102,29 @@
   }
 
   function filterCountries() {
-    const input = document.getElementById("countrySearch").value.toLowerCase();
+    const input = document.getElementById("countrySearch"); //Input for country searches
+    const clearBtn = document.getElementById("clearSearch"); // Clear button to remove typed names
+    const filter = input.value.toLowerCase();
     const items = document.getElementById("countryItems").getElementsByTagName("li");
+
+    // Show/Hide the 'x' button based on text length
+    if (input.value.length > 0) {
+      clearBtn.classList.remove("d-none");
+    } else {
+      clearBtn.classList.add("d-none");
+    }
 
     for (let i = 0; i < items.length; i++) {
       const text = items[i].innerText.toLowerCase();
-      items[i].style.display = text.includes(input) ? "" : "none";
+      items[i].style.display = text.includes(filter) ? "" : "none";
     }
+  }
+
+  function clearCountrySearch() {
+    const input = document.getElementById("countrySearch");
+    input.value = ""; // Clear the text
+    filterCountries(); // Reset the list and hide the button
+    input.focus(); // Keep the cursor in the box
   }
 
   // Optional: Run this to populate the list automatically with all countries
