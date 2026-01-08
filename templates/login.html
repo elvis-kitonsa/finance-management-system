@@ -1,12 +1,19 @@
+<!-- This is the official registration page for the FMS System -->
+<!-- extends base.html (The skeleton) for these templates -->
+
 {% extends "base.html" %} {% block content %}
 <div class="container d-flex align-items-center justify-content-center" style="height: 100vh; overflow: hidden">
+  <!-- overflow: hidden eliminates the scroll-down, keeps tile on one page -->
   <div class="neo-card w-100 p-4 p-md-5 shadow-lg border-0" style="max-width: 420px; background: rgba(255, 255, 255, 0.95); border-radius: 30px; backdrop-filter: blur(10px)">
+    <!-- Header Section of your login card -->
+    <!--It combines Bootstrap utility classes with inline CSS to create a premium, high-tech visual identity for the login template -->
     <div class="text-center mb-4">
       <div class="d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border-radius: 18px; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3)">
-        <i data-lucide="shield-check" size="28" class="text-white"></i>
+        <i data-lucide="lock-open" size="28" class="text-white"></i>
       </div>
-      <h2 class="fw-bold text-dark mb-1" style="letter-spacing: -1px">Secure Vault</h2>
-      <p class="text-muted small">Unlock your financial pulse</p>
+      <!-- Login Card Title-->
+      <h2 class="fw-bold text-dark mb-1" style="letter-spacing: -1px">FMS</h2>
+      <p class="text-muted small">Manage your Finances</p>
     </div>
 
     <form method="POST">
