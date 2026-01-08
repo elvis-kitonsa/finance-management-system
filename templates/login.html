@@ -2,6 +2,7 @@
 <!-- extends base.html (The skeleton) for these templates -->
 
 {% extends "base.html" %} {% block content %}
+
 <div class="container d-flex align-items-center justify-content-center" style="height: 100vh; overflow: hidden">
   <!-- overflow: hidden eliminates the scroll-down, keeps tile on one page -->
   <div class="neo-card w-100 p-4 p-md-5 shadow-lg border-0" style="max-width: 420px; background: rgba(255, 255, 255, 0.95); border-radius: 30px; backdrop-filter: blur(10px)">
@@ -13,57 +14,53 @@
       </div>
       <!-- Login Card Title-->
       <h2 class="fw-bold text-dark mb-1" style="letter-spacing: -1px">F<span style="color: #0000ff">M</span>S</h2>
-      <p class="text-muted small">Manage your Finances</p>
+      <p class="text-muted small">
+        <span style="color: #111111">Manage your Finances</span>
+      </p>
     </div>
 
     <form method="POST">
       <div class="mb-3">
-        <!-- Login options: Email or Phone Number -->
-        <div class="d-flex bg-light rounded-pill p-1 mb-3" style="border: 1px solid #e2e8f0; font-size: 0.8rem">
-          <button type="button" id="emailBtn" class="btn btn-sm w-50 rounded-pill fw-bold bg-white text-primary shadow-sm" onclick="toggleInput('email')">Email</button>
+        <!-- Login button options: Email or Phone Number -->
+        <div class="d-flex bg-light rounded-pill p-1 mb-3" style="border: 1px solid #20252c; font-size: 0.8rem">
+          <button type="button" id="emailBtn" class="btn btn-sm w-50 rounded-pill fw-bold text-white shadow-sm" onclick="toggleInput('email')" style="background-color: #0000ff">Email</button>
           <button type="button" id="phoneBtn" class="btn btn-sm w-50 rounded-pill fw-bold text-muted" onclick="toggleInput('phone')">Phone</button>
         </div>
 
-        <div id="emailContainer" class="input-group input-group-merge shadow-sm rounded-4">
-          <span class="input-group-text bg-white border-end-0 ps-3"><i data-lucide="mail" size="18" class="text-muted"></i></span>
-          <input type="email" name="email" class="form-control border-start-0 py-2" placeholder="name@email.com" id="emailInput" />
+        <!-- Email Continer - for the email users -->
+        <div id="emailContainer" class="input-group input-group-merge shadow-sm rounded-pill" style="border: 1px solid #20252c; overflow: hidden">
+          <span class="input-group-text bg-white border-0 ps-3"><i data-lucide="mail" size="18" class="text-muted"></i></span>
+          <div style="width: 1px; height: 20px; background-color: #20252c; align-self: center; opacity: 0.4"></div>
+          <input type="email" name="email" class="form-control border-0 py-2 shadow-none text-dark fw-medium" placeholder="Email address" id="emailInput" />
         </div>
 
         <!--Phone Container - includes a drop down for all the country codes of various countries and a close out button to delete typed text -->
-        <div id="phoneContainer" class="input-group input-group-merge shadow-sm rounded-4 d-none">
-          <button class="btn btn-white border-end-0 dropdown-toggle text-dark fw-bold" type="button" data-bs-toggle="dropdown" id="activeCode" style="border-top-left-radius: 15px; border-bottom-left-radius: 15px; font-size: 0.9rem">+256</button>
+        <div id="phoneContainer" class="input-group input-group-merge shadow-sm rounded-pill d-none" style="border: 1px solid #20252c; overflow: hidden">
+          <button class="btn btn-white border-0 dropdown-toggle text-dark fw-bold" type="button" data-bs-toggle="dropdown" id="activeCode" style="font-size: 0.9rem">+256</button>
 
-          <ul class="dropdown-menu shadow border-0 p-2" id="countryList" style="max-height: 250px; overflow-y: auto; width: 280px">
-            <div class="px-3 pb-2 border-bottom mb-2 position-relative">
-              <input type="text" class="form-control form-control-sm rounded-pill pe-5 shadow-none" id="countrySearch" placeholder="Search country..." onkeyup="filterCountries()" style="background-color: #f1f5f9; border: none; height: 35px; font-size: 0.85rem" />
+          <div style="width: 1px; height: 25px; background-color: #20252c; align-self: center; opacity: 0.5"></div>
 
-              <span id="clearSearch" class="position-absolute d-none" onclick="clearCountrySearch()" style="right: 25px; top: 43%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; line-height: 1">
-                <i data-lucide="circle-x" size="16"></i>
-              </span>
-            </div>
-            <div id="countryItems">
-              <li class="text-center py-2"><small class="text-muted">Loading countries...</small></li>
-            </div>
-          </ul>
+          <ul class="dropdown-menu shadow border-0 p-2" id="countryList" style="max-height: 250px; overflow-y: auto; width: 280px"></ul>
 
-          <input type="text" name="phone" class="form-control border-start-0 py-2" placeholder="71234567" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="phoneInput" />
+          <input type="text" name="phone" class="form-control border-0 py-2 shadow-none" placeholder="71234567" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="phoneInput" />
           <input type="hidden" name="country_code" id="country_code_val" value="+256" />
         </div>
       </div>
 
       <div class="mb-4">
-        <div class="input-group input-group-merge shadow-sm rounded-4">
-          <span class="input-group-text bg-white border-end-0 ps-3"><i data-lucide="key-round" size="18" class="text-muted"></i></span>
-          <input type="password" name="password" class="form-control border-start-0 py-2" placeholder="Access Key" required />
+        <div class="input-group input-group-merge shadow-sm rounded-pill" style="border: 1px solid #20252c; overflow: hidden">
+          <span class="input-group-text bg-white border-0 ps-3"><i data-lucide="key-round" size="18" class="text-muted"></i></span>
+          <div style="width: 1px; height: 20px; background-color: #20252c; align-self: center; opacity: 0.4"></div>
+          <input type="password" name="password" class="form-control border-0 py-2 shadow-none text-dark fw-medium" placeholder="Password" required />
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100 py-2 mb-3 shadow-sm rounded-4 fw-bold">Authorize Access</button>
+      <button type="submit" class="btn w-100 py-2 mb-3 shadow-sm rounded-pill fw-bold text-white" style="background-color: #0000ff; border: 1px solid #20252c">Authorize Access</button>
     </form>
 
-    <div class="text-center mt-3 pt-3 border-top">
-      <p class="small text-muted mb-2">New to FinanceFlow?</p>
-      <a href="{{ url_for('register') }}" class="fw-bold text-primary text-decoration-none small">Create Secure Account</a>
+    <div class="text-center mt-3 pt-3" style="border-top: 1px solid #20252c">
+      <p class="small mb-2 fw-medium" style="color: #20252c">New to FinanceFlow?</p>
+      <a href="{{ url_for('register') }}" class="fw-bold text-decoration-none small" style="color: #0000ff">Create Secure Account</a>
     </div>
   </div>
 </div>
@@ -73,6 +70,7 @@
 <script>
   lucide.createIcons();
 
+  //Toggles and highlights the button slider between Email and Phone
   function toggleInput(mode) {
     const emailCon = document.getElementById("emailContainer");
     const phoneCon = document.getElementById("phoneContainer");
@@ -82,15 +80,29 @@
     if (mode === "email") {
       emailCon.classList.remove("d-none");
       phoneCon.classList.add("d-none");
-      eBtn.classList.add("bg-white", "text-primary", "shadow-sm");
-      pBtn.classList.remove("bg-white", "text-primary", "shadow-sm", "text-muted");
+
+      // Email Active
+      eBtn.style.backgroundColor = "#0000ff";
+      eBtn.classList.add("text-white", "shadow-sm");
+      eBtn.classList.remove("text-muted", "bg-white");
+
+      // Phone Inactive
+      pBtn.style.backgroundColor = "transparent";
       pBtn.classList.add("text-muted");
+      pBtn.classList.remove("text-white", "shadow-sm", "bg-white");
     } else {
       emailCon.classList.add("d-none");
       phoneCon.classList.remove("d-none");
-      pBtn.classList.add("bg-white", "text-primary", "shadow-sm");
-      eBtn.classList.remove("bg-white", "text-primary", "shadow-sm", "text-muted");
+
+      // Phone Active
+      pBtn.style.backgroundColor = "#0000ff";
+      pBtn.classList.add("text-white", "shadow-sm");
+      pBtn.classList.remove("text-muted", "bg-white");
+
+      // Email Inactive
+      eBtn.style.backgroundColor = "transparent";
       eBtn.classList.add("text-muted");
+      eBtn.classList.remove("text-white", "shadow-sm", "bg-white");
     }
   }
 
