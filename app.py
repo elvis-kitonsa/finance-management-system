@@ -6,17 +6,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 # Initialize the application first
+# Flask app setup
 app = Flask(__name__)
 
-# Basic Configuration
+# Basic Configuration - SECRET_KEY and Database URI for SQLAlchemy to use
+# Make sure to change 'your-very-secret-key' to a strong secret key in production
 app.config['SECRET_KEY'] = 'your-very-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finance.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize the database / Extensions second
+# Initialize Database - SQLAlchemy
 db.init_app(app)
 
 # Initialize Login Manager
+# Manages user sessions and authentication
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login' # Redirects here if login is required
@@ -30,32 +33,41 @@ def load_user(user_id):
 
 # --- AUTHENTICATION ROUTES ---
 
+# 1. Registration Route
+# Handles new user sign-ups
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        # Match these fields with your registration form - /templates/register.html
         email = request.form.get('email')
         phone = request.form.get('phone')
         password = request.form.get('password')
+        full_name = request.form.get('full_name')
+        dob_str = request.form.get('dob') # This comes as a string "YYYY-MM-DD"
         
+        # Check if email or phone already exists
         if User.query.filter((User.email == email) | (User.phone == phone)).first():
             flash('Email or Phone already registered!', 'danger')
             return redirect(url_for('register'))
 
-        new_user = User(
-            email=email,
-            phone=phone,
-            full_name=request.form.get('full_name'),
-            password_hash=generate_password_hash(password),
-            dob=datetime.strptime(request.form.get('dob'), '%Y-%m-%d').date(),
-            home_address=request.form.get('home_address'),
-            national_id=request.form.get('national_id'),
-            terms_agreed=True,
-            total_balance=0.0
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        flash('Account created! Please login.', 'success')
-        return redirect(url_for('login'))
+        # Create new user with only fields present in /templates/register.html
+        try:
+            new_user = User(
+                email=email,
+                phone=phone,
+                full_name=full_name,
+                password_hash=generate_password_hash(password),
+                dob=datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None,
+                total_balance=0.0
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Account created! Please login.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error creating account: {str(e)}', 'danger')
+            return redirect(url_for('register'))
         
     return render_template('register.html')
 

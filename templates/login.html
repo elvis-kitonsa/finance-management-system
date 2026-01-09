@@ -1,5 +1,5 @@
 <!-- This is the official registration page for the FMS System -->
-<!-- extends base.html (The skeleton) for these templates -->
+<!-- Extends the base template to inherit common structure and styles -->
 
 {% extends "base.html" %} {% block content %}
 <style>
@@ -80,6 +80,7 @@
   lucide.createIcons();
 
   //Toggles and highlights the button slider between Email and Phone
+  // Called when either button is clicked
   function toggleInput(mode) {
     const emailCon = document.getElementById("emailContainer");
     const phoneCon = document.getElementById("phoneContainer");
@@ -117,6 +118,8 @@
 
   function setCode(code) {
     // This updates the text on the button itself
+    // It updates the visible country code when a user selects a country from the dropdown
+
     document.getElementById("activeCode").innerText = code;
     // This updates the hidden input that goes to the server
     document.getElementById("country_code_val").value = code;
