@@ -47,7 +47,7 @@
 
           <div style="width: 1px; height: 20px; background-color: #20252c; align-self: center; opacity: 0.3; z-index: 2"></div>
 
-          <input type="text" name="phone" class="form-control border-0 py-2 shadow-none bg-transparent" placeholder="71234567" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="phoneInput" style="margin-left: 5px" />
+          <input type="text" name="phone" class="form-control border-0 py-2 shadow-none bg-transparent" placeholder="71234567" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="margin-left: 5px" id="phoneInput" disabled />
 
           <input type="hidden" name="country_code" id="country_code_val" value="+256" />
 
@@ -87,9 +87,21 @@
     const eBtn = document.getElementById("emailBtn");
     const pBtn = document.getElementById("phoneBtn");
 
+    // NEW: Get the actual input elements
+    const emailInput = document.getElementById("emailInput");
+    const phoneInput = document.getElementById("phoneInput");
+
+    //Lets try to enable/disable inputs based on selection
+    // This ensures only the relevant input is submitted to the server
+    //If the user selects email, enable email input and disable phone input
+    //If the user selects phone, enable phone input and disable email input
     if (mode === "email") {
       emailCon.classList.remove("d-none");
       phoneCon.classList.add("d-none");
+
+      // CRITICAL FIX: Enable email, disable phone
+      emailInput.disabled = false;
+      phoneInput.disabled = true;
 
       // Email Active
       eBtn.style.backgroundColor = "#0000ff";
@@ -103,6 +115,10 @@
     } else {
       emailCon.classList.add("d-none");
       phoneCon.classList.remove("d-none");
+
+      // CRITICAL FIX: Disable email, enable phone
+      emailInput.disabled = true;
+      phoneInput.disabled = false;
 
       // Phone Active
       pBtn.style.backgroundColor = "#0000ff";
