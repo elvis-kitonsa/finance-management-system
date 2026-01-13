@@ -33,9 +33,17 @@
       </div>
       <div class="vr mx-2"></div>
 
+      <!-- User Profile Dropdown -->
+      <!-- Displays user initials and dropdown menu -->
       <div class="dropdown">
-        <div class="user-avatar dropdown-toggle shadow-sm" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer">
-          <span id="user-initials">{{ current_user.full_name[:2].upper() }}</span>
+        <div
+          class="user-avatar dropdown-toggle shadow-sm d-flex align-items-center justify-content-center"
+          id="profileDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          style="cursor: pointer; width: 45px; height: 45px; border-radius: 50%; background-color: #0000ff !important; color: #ffffff !important"
+        >
+          <span id="user-initials" class="fw-bold text-white">{{ initials }}</span>
         </div>
 
         <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="profileDropdown">
@@ -131,7 +139,8 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h5 class="fw-bold mb-0">List | Registered Expenses</h5>
-      <button class="btn px-4 py-2 rounded-4 fw-bold shadow-sm text-white" style="background-color: #0000ff; border: 1px solid #0000ff" data-bs-toggle="modal" data-bs-target="#expenseModal"><i class="bi bi-plus-lg me-2"></i>Record Expense</button>
+
+      <button class="btn btn-fms px-4 py-2 rounded-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#expenseModal"><i class="bi bi-plus-lg me-2"></i>Record Expense</button>
     </div>
 
     <div class="card glass-card overflow-hidden">
@@ -203,13 +212,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body py-4">
+        <!-- Balance Setup View -->
+        <!-- This view allows users to adjust their total balance -->
         <div id="balance-setup-view">
           <div class="text-center mb-4">
             <small class="text-muted text-uppercase fw-bold">Current Adjustment</small>
             <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
-              <button class="btn btn-outline-primary rounded-circle" onclick="adjustValue(-25000)" style="width: 45px; height: 45px">-</button>
-              <input type="number" id="balance-input" class="form-control form-control-lg text-center fw-bold border-0 bg-light" value="{{ total_balance }}" style="width: 200px; border-radius: 15px" />
-              <button class="btn btn-outline-primary rounded-circle" onclick="adjustValue(25000)" style="width: 45px; height: 45px">+</button>
+              <button class="btn btn-fms rounded-circle p-0" onclick="adjustValue(-25000)" style="width: 45px; height: 45px">-</button>
+              <input type="number" id="balance-input" class="form-control form-control-lg text-center fw-bold border-0 bg-light text-fms-blue" value="{{ total_balance }}" style="width: 200px; border-radius: 15px" />
+              <button class="btn btn-fms rounded-circle p-0" onclick="adjustValue(25000)" style="width: 45px; height: 45px">+</button>
             </div>
             <p class="small text-muted mt-3">Step size: 25,000 UGX</p>
           </div>
@@ -217,7 +228,7 @@
             <input class="form-check-input" type="checkbox" id="reset-all-data" />
             <label class="form-check-label fw-bold text-danger" for="reset-all-data">Reset all expenses & cards?</label>
           </div>
-          <button class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-sm" onclick="checkResetFlag()">Update Balance</button>
+          <button class="btn btn-fms w-100 py-3 rounded-4 fw-bold shadow-sm" onclick="checkResetFlag()">Update Balance</button>
         </div>
         <div id="reset-confirm-view" class="d-none text-center py-4">
           <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-3 mb-3">
@@ -266,7 +277,7 @@
             <label class="form-label small fw-bold text-muted">AMOUNT (UGX)</label>
             <input type="number" id="expense-amount" class="form-control form-control-lg border-0 bg-light rounded-3 fw-bold text-primary" placeholder="0" required />
           </div>
-          <button type="submit" id="save-btn" class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-sm">Save Entry</button>
+          <button type="submit" id="save-btn" class="btn btn-fms w-100 py-3 rounded-4 fw-bold shadow-sm">Save Entry</button>
         </form>
       </div>
     </div>

@@ -139,12 +139,19 @@ def dashboard():
     amount_saved = sum(exp.amount for exp in all_expenses if exp.category == 'Savings')
     total_remaining = total_balance - (total_spent + amount_saved)
 
+    # --- NEW INITIALS LOGIC ---
+    # This takes "Mubiru Stuart" and turns it into "MS"
+    # It also works for "Ismah Lule" -> "IL" or "John" -> "J"
+    name_parts = current_user.full_name.split()
+    initials = "".join([part[0].upper() for part in name_parts[:2]])
+
     return render_template('dashboard.html', 
                            expenses=all_expenses, 
                            total_balance=total_balance,
                            total_spent=total_spent,
                            total_remaining=total_remaining,
-                           amount_saved=amount_saved)
+                           amount_saved=amount_saved,
+                           initials=initials) # Send initials to the frontend
 
 @app.route('/update_balance', methods=['POST'])
 @login_required

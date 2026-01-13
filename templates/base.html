@@ -17,7 +17,7 @@
 
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/edits.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edits.css') }}?v=1.1" />
 
     <!-- Custom Styles for the FMS System -->
     <!-- Used in both login and register templates -->
@@ -27,6 +27,8 @@
         --bg-soft: #f4f7fe;
         --text-dark: #1a1d1f;
         --text-muted: #6f767e;
+        --fms-blue: #0000ff; /* Your vibrant login blue */
+        --fms-blue-soft: rgba(0, 0, 255, 0.1); /* The soft glow for icons */
       }
 
       body {
@@ -37,6 +39,7 @@
         margin: 0;
       }
 
+      /* Dashboard & Login Card Styles */
       .neo-card {
         background: #ffffff;
         border-radius: 40px;
@@ -45,6 +48,7 @@
         border: 1px solid rgba(255, 255, 255, 0.8);
       }
 
+      /* Form Input Styles */
       .form-control {
         background-color: #f4f7fe !important;
         border: 2px solid transparent !important;
@@ -59,6 +63,7 @@
         box-shadow: 0 10px 20px rgba(55, 93, 251, 0.05) !important;
       }
 
+      /* Legacy Button Styles */
       .btn-primary-rocky {
         background: var(--brand-blue);
         color: white;
@@ -87,6 +92,46 @@
       .btn-outline-rocky:hover {
         background: #fcfcfd;
         border-color: var(--brand-blue);
+      }
+
+      /* --- GLOBAL VIBRANT BLUE UTILITIES --- */
+      /* These are now outside any hover blocks so they work everywhere */
+
+      .bg-fms-blue {
+        background-color: var(--fms-blue) !important;
+        color: white !important;
+      }
+
+      .text-fms-blue {
+        color: var(--fms-blue) !important;
+      }
+
+      .btn-fms {
+        background-color: var(--fms-blue) !important;
+        color: white !important;
+        border: 1px solid var(--fms-blue) !important;
+        transition: all 0.2s ease;
+      }
+
+      .btn-fms:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+        color: white !important;
+      }
+
+      /* Brute force fix for the avatar color */
+      #profileDropdown.user-avatar {
+        background-color: #0000ff !important;
+        background: #0000ff !important;
+        opacity: 1 !important;
+        filter: none !important;
+        border: none !important;
+      }
+
+      #profileDropdown.user-avatar span {
+        color: #ffffff !important;
+        opacity: 1 !important;
       }
     </style>
   </head>
