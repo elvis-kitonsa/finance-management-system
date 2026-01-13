@@ -64,15 +64,7 @@ def register():
                 # total_balance=0.0 #This initializes the user's balance at 0 upon registration
 
                 # Fields REQUIRED by your database but HIDDEN from the user
-                total_balance=0.0,
-                home_address="Not Provided", 
-                national_id="Pending Verification",
-                employment_status="Not Specified",
-                monthly_income=0.0,
-                financial_goals="General",
-                terms_agreed=True,           # Automatically agree since there is no checkbox
-                privacy_consent=True,
-                data_accuracy_declaration=True,
+                total_balance=0.0,  # Initializing balance at 0 for new users
                 base_currency="UGX"          # Default currency
             )
             db.session.add(new_user)
@@ -276,11 +268,6 @@ with app.app_context():
             full_name="Admin User",
             phone="000000000",
             dob=date(1990, 1, 1),
-            home_address="System",
-            national_id="ADMIN-001",
-            terms_agreed=True,
-            privacy_consent=True,
-            data_accuracy_declaration=True,
             total_balance=0.0 # Initializing balance at 0
         )
         db.session.add(admin)
