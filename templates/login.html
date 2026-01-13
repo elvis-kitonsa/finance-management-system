@@ -209,26 +209,68 @@
   // Call this function when the page loads
   fetchAllCountries();
 
-  // This forces the fields to clear every time the page is refreshed (F5)
+  // CONSOLIDATED: Handle all page load logic
   window.onload = function () {
     const emailInput = document.getElementById("emailInput");
     const phoneInput = document.getElementById("phoneInput");
     const passwordInput = document.querySelector('input[name="password"]');
 
+    // 1. Clear fields on fresh load
     if (emailInput) emailInput.value = "";
     if (phoneInput) phoneInput.value = "";
     if (passwordInput) passwordInput.value = "";
 
-    // Optional: Reset the toggle to Email view on every refresh
+    // 2. CHECK URL: Only show "Account Ready" if redirected from Register
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("registered")) {
+      showRegistrationSuccess();
+    }
+
+    // 3. Default to email view
     toggleInput("email");
   };
 
-  // Show the login success overlay when the form is submitted
-  // This provides user feedback that login is in progress
+  // Logic for NEW users (Coming from Register)
+  // Displays a success overlay when redirected from registration
+  function showRegistrationSuccess() {
+    const overlay = document.getElementById("login-success-overlay");
+    const title = overlay.querySelector("h2");
+    const text = overlay.querySelector("p");
+    const spinner = overlay.querySelector(".spinner-border");
+    const subText = overlay.querySelector(".small.text-muted.mt-2");
+
+    title.innerText = "Account Ready!";
+    text.innerText = "Your secure account is created. Please log in.";
+
+    if (spinner) spinner.classList.add("d-none");
+    if (subText) subText.classList.add("d-none");
+
+    overlay.classList.remove("d-none");
+    lucide.createIcons();
+
+    // Auto-hide after 3 seconds so they can type their credentials
+    setTimeout(() => {
+      overlay.classList.add("d-none");
+    }, 3000);
+  }
+
+  // Logic for EXISTING users (Clicking Login button)
+  // Displays a verification overlay upon login submission
   document.querySelector("form").addEventListener("submit", function () {
     const overlay = document.getElementById("login-success-overlay");
+    const title = overlay.querySelector("h2");
+    const text = overlay.querySelector("p");
+    const spinner = overlay.querySelector(".spinner-border");
+    const subText = overlay.querySelector(".small.text-muted.mt-2");
+
+    title.innerText = "Verified!";
+    text.innerText = "Welcome back! Authentication successful.";
+
+    if (spinner) spinner.classList.remove("d-none");
+    if (subText) subText.classList.remove("d-none");
+
     overlay.classList.remove("d-none");
-    lucide.createIcons(); // This ensures the shield-check icon renders immediately
+    lucide.createIcons();
   });
 </script>
 

@@ -69,8 +69,8 @@ def register():
             )
             db.session.add(new_user)
             db.session.commit()
-            flash('Account created! Please login.', 'success')
-            return redirect(url_for('login'))
+            # flash('Account created! Please login.', 'success')
+            return redirect(url_for('login', registered=True)) # Add a URL parameter instead
         except Exception as e:
             db.session.rollback()
             # This will show you exactly if any other field is missing
