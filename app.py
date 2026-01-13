@@ -129,25 +129,22 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# --- MAIN DASHBOARD ROUTES (Multi-user) ---
-
+# --- ROUTE REDIRECTION LOGIC (The Gatekeeper) ---
 @app.route('/')
-@login_required # Dashboard now requires login
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+# --- MAIN DASHBOARD ROUTE ---
+@app.route('/dashboard')
+@login_required 
 def dashboard():
-    
-    # CHANGE: Use current_user.id to filter expenses
     all_expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date_to_handle.desc()).all()
-    
-    # CHANGE: Use current_user.total_balance
     total_balance = current_user.total_balance
     
-    # 1. Sum of everything that is NOT 'Savings' (Actual Costs)
     total_spent = sum(exp.amount for exp in all_expenses if exp.category != 'Savings')
-    
-    # 2. Sum of everything categorized as 'Savings'
     amount_saved = sum(exp.amount for exp in all_expenses if exp.category == 'Savings')
-    
-    # 3. Total Remaining = Starting Balance - (Everything Spent + Everything Saved)
     total_remaining = total_balance - (total_spent + amount_saved)
 
     return render_template('dashboard.html', 
