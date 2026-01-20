@@ -257,18 +257,31 @@ def mark_paid(expense_id):
         return jsonify({"status": "error", "message": str(e)}), 500
 
 # --- ADDITIONAL PAGES ROUTES ---
-# 1. Budgets Page
-@app.route('/budgets')
+
+@app.route('/accounts') # This matches your sidebar link
 @login_required
 def budgets():
-    # Fetch user data similar to dashboard to keep the sidebar consistent
-    full_name = current_user.full_name
-    initials = "".join([n[0] for n in full_name.split()]).upper()
+    # 1. Fetch actual data from the logged-in user to ensure dashboard sync
+    expenses = current_user.expenses 
+    total_balance = current_user.total_balance
     
-    # We pass the balance and expenses so the sidebar and header stay populated
+    # 2. Logic for initials (keeping it consistent with the dashboard)
+    name_parts = current_user.full_name.split()
+    initials = "".join([part[0].upper() for part in name_parts[:2]])
+
+    # 3. Manual Savings Catalog Data (Static for now, can move to DB later)
+    # This fulfills your requirement for a deeper detail savings catalog [cite: 2026-01-01]
+    savings_goals = [
+        {'name': 'Emergency Fund', 'target': 2000000, 'current': 500000, 'icon': 'bi-shield-check'},
+        {'name': 'New Laptop', 'target': 3500000, 'current': 1200000, 'icon': 'bi-laptop'}
+    ]
+    
+    # 4. Render the page
     return render_template('budgets.html', 
-                           initials=initials, 
-                           total_balance=current_user.total_balance)
+                           total_balance=total_balance, 
+                           expenses=expenses,
+                           savings_goals=savings_goals,
+                           initials=initials)
 
 @app.route('/analytics')
 @login_required

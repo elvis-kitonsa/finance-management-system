@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block content %}
+<main class="p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Financial Command Center</h4>
+    <div class="btn-group shadow-sm" role="group">
+      <button type="button" class="btn btn-fms btn-sm px-3">UGX</button>
+      <button type="button" class="btn btn-outline-fms btn-sm px-3">USD</button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-xl-8">
+      <div class="card glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="card-label mb-1">Total Available Funds</p>
+            <h2 class="fw-bold text-fms-blue">UGX {{ "{:,.0f}".format(total_balance) }}</h2>
+          </div>
+          <button class="btn btn-fms rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#updateBalanceModal"><i class="bi bi-pencil-square me-2"></i>Adjust Budget</button>
+        </div>
+        <hr class="opacity-10" />
+        <p class="small text-muted"><i class="bi bi-info-circle me-1"></i> This amount is reflected across your entire dashboard.</p>
+      </div>
+
+      <h5 class="fw-bold mb-3">Category Allocations</h5>
+      <div class="card glass-card p-4">
+        <div class="mb-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">🍽️ Food & Dining</span>
+            <span class="small text-muted">Budget: 500,000 | Spent: 120,000</span>
+          </div>
+          <div class="progress" style="height: 10px; border-radius: 5px">
+            <div class="progress-bar bg-fms-blue" style="width: 24%"></div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="fw-bold">⛽ Transport</span>
+            <span class="small text-muted">Budget: 200,000 | Spent: 150,000</span>
+          </div>
+          <div class="progress" style="height: 10px; border-radius: 5px">
+            <div class="progress-bar bg-warning" style="width: 75%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4">
+      <h5 class="fw-bold mb-3">Savings Catalog</h5>
+      <div class="card glass-card p-0 overflow-hidden">
+        <div class="p-4 border-bottom bg-light-subtle">
+          <button class="btn btn-outline-fms w-100 fw-bold rounded-4"><i class="bi bi-plus-circle me-2"></i>New Savings Goal</button>
+        </div>
+        <div class="list-group list-group-flush">
+          {% for goal in savings_goals %}
+          <div class="list-group-item bg-transparent p-4 border-0 border-bottom">
+            <div class="d-flex align-items-center mb-2">
+              <div class="icon-box me-3" style="background: var(--fms-blue-soft); color: var(--fms-blue)">
+                <i class="bi {{ goal.icon }}"></i>
+              </div>
+              <h6 class="fw-bold mb-0">{{ goal.name }}</h6>
+            </div>
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Progress: {{ (goal.current / goal.target * 100)|round|int }}%</span>
+              <span>{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }}</span>
+            </div>
+            <div class="progress" style="height: 6px">
+              <div class="progress-bar bg-success" style="width: {{ (goal.current / goal.target * 100) }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5">
+    <h5 class="fw-bold mb-3">Monthly Budget History (2026)</h5>
+    <div class="card glass-card">
+      <table class="table mb-0 table-hover">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4 py-3 text-muted small">MONTH</th>
+            <th class="py-3 text-muted small">TOTAL BUDGET</th>
+            <th class="py-3 text-muted small">TOTAL SPENT</th>
+            <th class="pe-4 py-3 text-muted small text-end">SAVED</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ps-4 fw-bold">January</td>
+            <td>UGX 1,500,000</td>
+            <td class="text-danger">-UGX 1,200,000</td>
+            <td class="pe-4 text-end text-success">+UGX 300,000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+{% endblock %}
