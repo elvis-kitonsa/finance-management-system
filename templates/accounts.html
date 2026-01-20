@@ -20,7 +20,7 @@
             <p class="card-label mb-1">Total Available Funds</p>
             <h2 class="fw-bold text-fms-blue">UGX {{ "{:,.0f}".format(total_balance) }}</h2>
           </div>
-          <button class="btn btn-fms rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#updateBalanceModal"><i class="bi bi-pencil-square me-2"></i>Adjust Budget</button>
+          <button class="btn btn-fms rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#adjustBudgetModal"><i class="bi bi-pencil-square me-2"></i>Adjust Budget</button>
         </div>
         <hr class="opacity-10" />
         <p class="small text-muted"><i class="bi bi-info-circle me-1"></i> This amount is reflected across your entire dashboard.</p>
@@ -101,5 +101,71 @@
       </table>
     </div>
   </div>
+
+  <!-- Adjust Budget Modal -->
+  <!-- Similar structure to the Adjust Budget Modal in budgets.html -->
+  <div class="modal fade" id="adjustBudgetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content neo-card border-0 p-4">
+        <div class="modal-header border-0 p-0 mb-4">
+          <h5 class="fw-bold mb-0">Adjust Total Budget</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="text-center mb-4">
+            <label class="small fw-bold text-muted d-block mb-2 text-uppercase">New Total Funds</label>
+            <div class="d-flex align-items-center justify-content-center gap-3">
+              <button class="btn btn-outline-fms rounded-circle p-2" onclick="adjustValue(-25000)">
+                <i class="bi bi-dash-lg"></i>
+              </button>
+              <input type="number" id="newBalanceInput" class="form-control text-center fw-bold fs-4 w-50" value="{{ total_balance }}" step="25000" />
+              <button class="btn btn-outline-fms rounded-circle p-2" onclick="adjustValue(25000)">
+                <i class="bi bi-plus-lg"></i>
+              </button>
+            </div>
+            <p class="small text-muted mt-2">STEP SIZE: 25,000 UGX</p>
+          </div>
+
+          <div class="form-check form-switch d-flex align-items-center justify-content-center gap-3 mb-4 p-0">
+            <input class="form-check-input ms-0" type="checkbox" id="resetToggle" />
+            <label class="form-check-label text-danger fw-bold small" for="resetToggle">Reset all expenses & cards?</label>
+          </div>
+
+          <button class="btn btn-fms w-100 py-3 fw-bold rounded-4" onclick="submitBudgetAdjustment()">Update Balance</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
+
+<!-- JavaScript to handle budget adjustment -->
+<!-- This script will manage the increment/decrement of the budget and will talk to the backend to update the total balance -->
+<script>
+  function adjustValue(amount) {
+    const input = document.getElementById("newBalanceInput");
+    input.value = Math.max(0, parseInt(input.value) + amount);
+  }
+
+  function submitBudgetAdjustment() {
+    const newBalance = document.getElementById("newBalanceInput").value;
+    const shouldReset = document.getElementById("resetToggle").checked;
+
+    fetch("/update_balance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        balance: newBalance,
+        should_reset: shouldReset,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          location.reload(); // Refresh to show the new UGX total and cleared cards
+        } else {
+          alert("Error: " + data.message);
+        }
+      });
+  }
+</script>
 {% endblock %}
