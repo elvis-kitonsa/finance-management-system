@@ -149,14 +149,48 @@
       }
     </style>
   </head>
+
   <body>
+    <!-- Sidebar and Main Wrapper -->
+    <div class="d-flex">
+      <nav id="sidebar">
+        <div class="p-4 d-flex align-items-center justify-content-between mb-4">
+          <h4 class="text-white fw-bold mb-0 logo-text">F<span style="color: var(--primary-accent)">M</span>S</h4>
+        </div>
+
+        <div class="nav flex-column">
+          <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}">
+            <i class="bi bi-house-door fs-5 me-3"></i>
+            <span class="nav-text">Overview</span>
+          </a>
+
+          <a href="{{ url_for('budgets') }}" class="nav-link {{ 'active' if request.endpoint == 'budgets' }}">
+            <i class="bi bi-wallet2 fs-5 me-3"></i>
+            <span class="nav-text">Accounts</span>
+          </a>
+
+          <a href="#" class="nav-link">
+            <i class="bi bi-pie-chart fs-5 me-3"></i>
+            <span class="nav-text">Analytics</span>
+          </a>
+
+          <a href="#" class="nav-link">
+            <i class="bi bi-fingerprint fs-5 me-3"></i>
+            <span class="nav-text">Security</span>
+          </a>
+        </div>
+      </nav>
+
+      <div id="main-wrapper" class="flex-grow-1">{% block content %}{% endblock %}</div>
+    </div>
+
     <!-- Flash Messages Section -->
     <!-- This section displays flash messages for user feedback -->
     <!-- These are useful for showing success or error messages after form submissions -->
 
     {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
-    <div class="alert alert-{{ category }} position-fixed top-0 w-100 shadow-sm" style="z-index: 9999">{{ message }}</div>
-    {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
+    <div class="alert alert-{{ category }} position-fixed top-0 end-0 me-3 mt-3 shadow-sm" style="z-index: 9999">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

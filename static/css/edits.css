@@ -119,6 +119,20 @@ body {
   box-shadow: 0 8px 20px rgba(0, 98, 255, 0.3);
 }
 
+/* Only slide items that are NOT currently active/blue */
+.nav-link:not(.active):hover {
+  transform: translateX(10px) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+/* Ensure the active blue pill stays perfectly still and vibrant */
+.nav-link.active {
+  background: var(--primary-accent) !important;
+  color: white !important;
+  transform: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 255, 0.3);
+}
 .top-nav {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
