@@ -29,7 +29,7 @@
         margin: 0;
       }
 
-      /* Sidebar Styling */
+      /* Sidebar Core - Dynamic Width */
       #sidebar {
         width: 260px;
         height: 100vh;
@@ -38,30 +38,36 @@
         left: 0;
         top: 0;
         z-index: 1000;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Razor-sharp smooth movement */
+        overflow-x: hidden;
+      }
+
+      /* Minimized State */
+      #sidebar.collapsed {
+        width: 80px;
+      }
+
+      /* Hide text when collapsed */
+      #sidebar.collapsed .nav-link span,
+      #sidebar.collapsed .sidebar-brand-text {
+        display: none;
       }
 
       #sidebar .nav-link {
-        color: rgba(255, 255, 255, 0.7);
-        border-radius: 12px;
-        margin: 5px 15px;
-        transition: all 0.2s;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
+        white-space: nowrap; /* Prevents text from wrapping during movement */
+        padding: 12px 25px;
       }
 
-      #sidebar .nav-link:hover,
-      #sidebar .nav-link.active {
-        background: var(--fms-blue);
-        color: white !important;
-      }
-
-      /* Main Content Positioning */
+      /* Content Area - Must react to sidebar movement */
       #main-wrapper {
-        margin-left: 260px; /* Protects dashboard cards from being hidden [cite: 2026-01-21] */
+        margin-left: 260px;
         width: calc(100% - 260px);
-        min-height: 100vh;
-        padding: 40px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #main-wrapper.expanded {
+        margin-left: 80px;
+        width: calc(100% - 80px);
       }
 
       /* Auth centering */
@@ -126,6 +132,15 @@
         background-color: rgba(0, 0, 255, 0.08) !important;
         color: #0000ff !important;
       }
+
+      /* Sidebar Collapsed State Adjustments */
+      #sidebar.collapsed .nav-link {
+        text-align: center;
+        padding: 12px 0;
+      }
+      #sidebar.collapsed .nav-link i {
+        margin-right: 0 !important;
+      }
     </style>
   </head>
 
@@ -135,10 +150,14 @@
     {% else %}
     <div class="d-flex">
       <nav id="sidebar">
-        <div class="p-4 mb-4">
-          <h4 class="text-white fw-bold mb-0">F<span style="color: var(--fms-blue)">M</span>S</h4>
+        <div class="p-4 d-flex align-items-center justify-content-between">
+          <h4 class="text-white fw-bold mb-0 sidebar-brand-text">F<span style="color: var(--fms-blue)">M</span>S</h4>
+          <button id="sidebarToggle" class="btn text-white p-0 border-0">
+            <i class="bi bi-text-indent-left fs-4"></i>
+          </button>
         </div>
-        <div class="nav flex-column">
+
+        <div class="nav flex-column mt-3">
           <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}"> <i class="bi bi-house-door fs-5 me-3"></i><span>Overview</span> </a>
           <a href="{{ url_for('budgets') }}" class="nav-link {{ 'active' if request.endpoint == 'budgets' }}"> <i class="bi bi-wallet2 fs-5 me-3"></i><span>Accounts</span> </a>
           <a href="#" class="nav-link"> <i class="bi bi-fingerprint fs-5 me-3"></i><span>Security</span> </a>
@@ -154,6 +173,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       lucide.createIcons();
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const wrapper = document.getElementById("main-wrapper");
+        const toggleBtn = document.getElementById("sidebarToggle");
+
+        if (toggleBtn) {
+          const toggleIcon = toggleBtn.querySelector("i");
+
+          toggleBtn.addEventListener("click", () => {
+            // Toggle the classes to trigger the CSS transitions [cite: 2026-01-21]
+            sidebar.classList.toggle("collapsed");
+            wrapper.classList.toggle("expanded");
+
+            // Swap the icon direction [cite: 2026-01-21]
+            if (sidebar.classList.contains("collapsed")) {
+              toggleIcon.className = "bi bi-text-indent-right fs-4";
+            } else {
+              toggleIcon.className = "bi bi-text-indent-left fs-4";
+            }
+          });
+        }
+      });
     </script>
   </body>
 </html>
