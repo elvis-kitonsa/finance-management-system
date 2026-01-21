@@ -17,7 +17,7 @@
         --bg-soft: #f4f7fe;
         --text-dark: #1a1d1f;
         --text-muted: #6f767e;
-        --fms-blue: #0000ff;
+        --fms-blue: #0000ff; /* This is your vibrant button blue */
         --fms-blue-soft: rgba(0, 0, 255, 0.1);
       }
 
@@ -78,8 +78,33 @@
         width: calc(100% - 80px);
       }
 
+      /* --- RESTORED BUTTON STYLING --- */
+      /* This ensures buttons in modals and the dashboard stay vibrant blue */
+      .btn-primary,
+      .btn-fms,
+      .btn-update,
+      button[type="submit"] {
+        background-color: var(--fms-blue) !important;
+        border: none !important;
+        color: white !important;
+        border-radius: 12px !important;
+        padding: 12px 24px !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 255, 0.3) !important;
+      }
+
+      /* Styles for the +/- buttons in your popup */
+      .btn-outline-primary {
+        border-color: var(--fms-blue) !important;
+        color: var(--fms-blue) !important;
+      }
+
+      .btn-outline-primary:hover {
+        background-color: var(--fms-blue) !important;
+        color: white !important;
+      }
+
       /* --- THE VIBRANT BLUE ICON LOCK --- */
-      /* Specificity increased to force the #0000ff blue [cite: 2026-01-21] */
       a.fms-avatar.dropdown-toggle {
         width: 45px !important;
         height: 45px !important;
@@ -94,16 +119,11 @@
         border: none !important;
       }
 
-      /* Remove the caret arrow that pushes "KE" off-center [cite: 2026-01-21] */
       a.fms-avatar.dropdown-toggle::after {
         display: none !important;
       }
 
-      .fms-avatar:hover {
-        transform: scale(1.05);
-        opacity: 0.9;
-      }
-
+      /* --- Dropdown Styling --- */
       .fms-dropdown-menu {
         border-radius: 18px !important;
         border: none !important;
@@ -112,18 +132,7 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
       }
 
-      .fms-dropdown-item {
-        border-radius: 10px;
-        padding: 8px 12px;
-        transition: all 0.2s;
-      }
-
-      .fms-dropdown-item:hover {
-        background-color: var(--fms-blue-soft) !important;
-        color: var(--fms-blue) !important;
-      }
-
-      /* Responsive Balance Fixes [cite: 2026-01-21] */
+      /* Responsive Balance Fixes */
       #main-wrapper:not(.expanded) .balance-text {
         font-size: 1.35rem !important;
       }
