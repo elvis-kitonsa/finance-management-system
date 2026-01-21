@@ -29,7 +29,7 @@
         margin: 0;
       }
 
-      /* Sidebar Core - Dynamic Width */
+      /* --- Sidebar Core: Dynamic Width --- */
       #sidebar {
         width: 260px;
         height: 100vh;
@@ -38,27 +38,35 @@
         left: 0;
         top: 0;
         z-index: 1000;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Razor-sharp smooth movement */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-x: hidden;
       }
 
-      /* Minimized State */
       #sidebar.collapsed {
         width: 80px;
       }
 
-      /* Hide text when collapsed */
       #sidebar.collapsed .nav-link span,
       #sidebar.collapsed .sidebar-brand-text {
         display: none;
       }
 
       #sidebar .nav-link {
-        white-space: nowrap; /* Prevents text from wrapping during movement */
+        white-space: nowrap;
         padding: 12px 25px;
+        transition: all 0.2s;
       }
 
-      /* Content Area - Must react to sidebar movement */
+      #sidebar.collapsed .nav-link {
+        text-align: center;
+        padding: 12px 0;
+      }
+
+      #sidebar.collapsed .nav-link i {
+        margin-right: 0 !important;
+      }
+
+      /* --- Content Area Layout --- */
       #main-wrapper {
         margin-left: 260px;
         width: calc(100% - 260px);
@@ -70,7 +78,33 @@
         width: calc(100% - 80px);
       }
 
-      /* Auth centering */
+      /* --- High-Capacity Balance Text (The Fix) --- */
+      .balance-text {
+        word-break: keep-all;
+        white-space: nowrap;
+        display: block;
+        transition: all 0.3s ease;
+        font-weight: 800;
+        letter-spacing: -0.8px; /* Tightens characters to fit larger numbers [cite: 2026-01-21] */
+      }
+
+      /* State: Sidebar is COLLAPSED (Large Screen Area) */
+      #main-wrapper.expanded .balance-text {
+        font-size: 1.8rem !important;
+      }
+
+      /* State: Sidebar is OPEN (Narrower Screen Area) [cite: 2026-01-21] */
+      #main-wrapper:not(.expanded) .balance-text {
+        font-size: 1.25rem !important;
+      }
+
+      /* Reclaim internal card space to prevent truncation [cite: 2026-01-21] */
+      .glass-card {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+      }
+
+      /* --- Auth & Utility Styling --- */
       .auth-container {
         display: flex;
         align-items: center;
@@ -79,14 +113,15 @@
         width: 100%;
       }
 
-      /* Global Blue Utilities */
       .bg-fms-blue {
         background-color: var(--fms-blue) !important;
         color: white !important;
       }
+
       .text-fms-blue {
         color: var(--fms-blue) !important;
       }
+
       .btn-fms {
         background-color: var(--fms-blue) !important;
         color: white !important;
@@ -96,12 +131,12 @@
         border: none;
       }
 
-      /* Premium Avatar & Dropdown */
+      /* --- Premium Avatar & Dropdown --- */
       .fms-avatar {
         width: 45px;
         height: 45px;
         border-radius: 50%;
-        background-color: #0000ff !important; /* Forces the vibrant blue */
+        background-color: #0000ff !important;
         color: #ffffff !important;
         display: flex;
         align-items: center;
@@ -133,13 +168,8 @@
         color: #0000ff !important;
       }
 
-      /* Sidebar Collapsed State Adjustments */
-      #sidebar.collapsed .nav-link {
-        text-align: center;
-        padding: 12px 0;
-      }
-      #sidebar.collapsed .nav-link i {
-        margin-right: 0 !important;
+      .stat-card-body {
+        padding: 1.25rem 1rem !important;
       }
     </style>
   </head>
