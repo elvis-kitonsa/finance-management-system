@@ -151,29 +151,27 @@
   </head>
 
   <body>
-    {% if request.endpoint not in ['login', 'register', 'index'] %}
+    {% if request.endpoint == 'login' or request.endpoint == 'register' %}
+
+    <div class="auth-wrapper">{% block auth_content %}{% endblock %}</div>
+
+    {% else %}
+
     <div class="d-flex">
-      <nav id="sidebar" style="min-height: 100vh; width: 260px; background-color: #0c0e12; flex-shrink: 0">
-        <div class="p-4 d-flex align-items-center justify-content-between mb-4">
-          <h4 class="text-white fw-bold mb-0 logo-text">F<span style="color: var(--brand-blue)">M</span>S</h4>
+      <nav id="sidebar" style="width: 260px; height: 100vh; background: #0c0e12; position: fixed">
+        <div class="p-4">
+          <h4 class="text-white fw-bold">F<span style="color: #0000ff">M</span>S</h4>
         </div>
-        <div class="nav flex-column">
-          <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' }} text-white text-decoration-none px-4 py-3"> <i class="bi bi-house-door fs-5 me-3"></i><span>Overview</span> </a>
+        <div class="nav flex-column mt-4">
+          <a href="{{ url_for('dashboard') }}" class="nav-link text-white px-4 py-3"> <i class="bi bi-house-door me-3"></i>Overview </a>
         </div>
       </nav>
 
-      <div class="flex-grow-1">{% block dashboard_content %}{% block content %}{% endblock %}{% endblock %}</div>
+      <div id="main-wrapper" style="margin-left: 260px; width: 100%; padding: 40px">{% block content %}{% endblock %}</div>
     </div>
 
-    {% else %}
-    <div class="d-flex align-items-center justify-content-center min-vh-100 w-100">{% block auth_content %}{{ self.content() }}{% endblock %}</div>
-    {% endif %} {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
-    <div class="alert alert-{{ category }} position-fixed top-0 end-0 me-3 mt-3 shadow-sm" style="z-index: 9999">{{ message }}</div>
-    {% endfor %} {% endif %} {% endwith %}
+    {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      lucide.createIcons();
-    </script>
   </body>
 </html>
