@@ -155,6 +155,25 @@
       .icon-box:active {
         transform: translateY(-2px) scale(0.98);
       }
+
+      /* --- ENHANCED CLICKABLE FEEL FOR ADJUST BUDGET BUTTON ON THE ACCOUNTS PAGE --- */
+      .btn-fms {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        background-color: #0000ff !important; /* Your signature deep blue */
+        border: none !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 255, 0.2) !important;
+      }
+
+      .btn-fms:hover {
+        background-color: #0000cc !important; /* Darkens slightly on hover for tactile feel */
+        box-shadow: 0 8px 20px rgba(0, 0, 255, 0.4) !important; /* Adds a deeper glow */
+        transform: translateY(-2px); /* Works with your bounce to feel more responsive */
+      }
+
+      .btn-fms:active {
+        transform: translateY(0) scale(0.95) !important; /* Shrinks slightly when pressed */
+        background-color: #0000aa !important; /* Deepest blue on click */
+      }
     </style>
   </head>
 
