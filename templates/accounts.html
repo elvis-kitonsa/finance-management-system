@@ -62,29 +62,36 @@
       <div class="card glass-card p-4 border-0 mb-4" style="border-radius: 28px">
         <h5 class="fw-bold mb-4" style="font-style: normal; color: #1a1d1f">Category Allocations</h5>
 
+        <!-- Accordion for Expense Categories -->
         <div class="accordion accordion-flush" id="categoryAccordion">
           <div class="accordion-item border-0 mb-3 bg-light" style="border-radius: 20px; overflow: hidden">
             <h2 class="accordion-header">
-              <button class="accordion-button collapsed px-4 py-3 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#groupFood" style="box-shadow: none">
-                <div class="d-flex align-items-center w-100">
-                  <div class="icon-box me-3 shadow-sm d-flex align-items-center justify-content-center" style="background: rgba(255, 193, 7, 0.1); color: #ffc107; width: 45px; height: 45px; border-radius: 12px">
-                    <i class="bi bi-egg-fried fs-5"></i>
+              <button class="accordion-button collapsed px-4 py-4 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#groupFood" style="box-shadow: none; border-radius: 20px">
+                <div class="d-flex flex-column w-100">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                      <div class="icon-box me-3 shadow-sm d-flex align-items-center justify-content-center" style="background: rgba(255, 193, 7, 0.15) !important; color: #ffc107 !important; width: 48px; height: 48px; border-radius: 14px; visibility: visible !important; display: flex !important">
+                        <i class="bi bi-cup-straw fs-4"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-bold mb-0 text-dark" style="font-style: normal">Meals & Dining</h6>
+                        <small class="text-muted" style="font-size: 0.7rem">AGGREGATED EXPENSES</small>
+                      </div>
+                    </div>
+                    <div class="text-end">
+                      <h6 class="fw-bold text-primary mb-0">UGX {{ "{:,.0f}".format(total_food_spent|default(0)) }}</h6>
+                      <small class="text-muted fw-bold" style="font-size: 0.65rem">TOTAL SPENT</small>
+                    </div>
                   </div>
 
-                  <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <span class="fw-bold text-dark" style="font-style: normal">Meals & Dining</span>
-                      <span class="fw-bold text-primary">UGX {{ "{:,.0f}".format(total_food_spent|default(0)) }}</span>
+                  <div class="progress-wrapper">
+                    <div class="progress" style="height: 10px; border-radius: 10px; background: #f0f2f5">
+                      {% set food_val = total_food_spent|default(0) %} {% set percent = (food_val / 500000 * 100)|round|int %}
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: {{ percent if percent <= 100 else 100 }}%;"></div>
                     </div>
-
-                    <div class="progress" style="height: 8px; border-radius: 10px; background: #e9ecef">
-                      {% set food_val = total_food_spent|default(0) %}
-                      <div class="progress-bar bg-warning" role="progressbar" style="width: {{ (food_val / 500000 * 100)|round if food_val > 0 else 0 }}%;"></div>
-                    </div>
-
-                    <div class="d-flex justify-content-between mt-1">
-                      <small class="text-muted" style="font-size: 0.7rem">BUDGET: UGX 500,000</small>
-                      <small class="text-muted" style="font-size: 0.7rem">SPENT</small>
+                    <div class="d-flex justify-content-between mt-2">
+                      <small class="fw-bold text-muted" style="font-size: 0.7rem">BUDGET: UGX 500,000</small>
+                      <small class="fw-bold {{ 'text-danger' if food_val > 500000 else 'text-success' }}" style="font-size: 0.7rem"> {{ percent }}% USED </small>
                     </div>
                   </div>
                 </div>
