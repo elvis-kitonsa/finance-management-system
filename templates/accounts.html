@@ -135,32 +135,50 @@
   <!-- Similar structure to the Adjust Budget Modal in budgets.html -->
   <div class="modal fade" id="adjustBudgetModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content neo-card border-0 p-4">
-        <div class="modal-header border-0 p-0 mb-4">
-          <h5 class="fw-bold mb-0">Adjust Total Budget</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-0">
-          <div class="text-center mb-4">
-            <label class="small fw-bold text-muted d-block mb-2 text-uppercase">New Total Funds</label>
-            <div class="d-flex align-items-center justify-content-center gap-3">
-              <button class="btn btn-outline-fms rounded-circle p-2" onclick="adjustValue(-25000)">
-                <i class="bi bi-dash-lg"></i>
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 35px; background: #e9ecef; overflow: hidden">
+        <div id="balance-setup-view" class="p-5">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0" style="color: #1a1d1f; font-size: 1.3rem">Adjust Budget</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size: 0.8rem"></button>
+          </div>
+
+          <div class="text-center">
+            <label class="small fw-bold text-muted d-block mb-3 text-uppercase" style="letter-spacing: 1.5px; font-size: 0.7rem">Current Adjustment</label>
+
+            <div class="d-flex align-items-center justify-content-center gap-4">
+              <button class="btn btn-link text-muted p-0" onclick="adjustValue(-25000)" style="text-decoration: none">
+                <i class="bi bi-dash fs-2"></i>
               </button>
-              <input type="number" id="newBalanceInput" class="form-control text-center fw-bold fs-4 w-50" value="{{ total_balance }}" step="25000" />
-              <button class="btn btn-outline-fms rounded-circle p-2" onclick="adjustValue(25000)">
-                <i class="bi bi-plus-lg"></i>
+
+              <input type="number" id="newBalanceInput" class="form-control text-center fw-bold border-0 bg-white" value="{{ total_balance }}" style="width: 220px; height: 60px; border-radius: 18px; font-size: 1.8rem; color: #1a1d1f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)" />
+
+              <button class="btn btn-link text-muted p-0" onclick="adjustValue(25000)" style="text-decoration: none">
+                <i class="bi bi-plus fs-2"></i>
               </button>
             </div>
-            <p class="small text-muted mt-2">STEP SIZE: 25,000 UGX</p>
-          </div>
 
-          <div class="form-check form-switch d-flex align-items-center justify-content-center gap-3 mb-4 p-0">
-            <input class="form-check-input ms-0" type="checkbox" id="resetToggle" />
-            <label class="form-check-label text-danger fw-bold small" for="resetToggle">Reset all expenses & cards?</label>
-          </div>
+            <p class="small text-muted mt-3 fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px">Step size: 25,000 UGX</p>
 
-          <button class="btn btn-fms w-100 py-3 fw-bold rounded-4" onclick="submitBudgetAdjustment()">Update Balance</button>
+            <div class="form-check form-switch d-flex align-items-center justify-content-center gap-3 my-4 p-0">
+              <input class="form-check-input ms-0" type="checkbox" id="resetToggle" style="width: 45px; height: 22px; cursor: pointer" />
+              <label class="form-check-label text-danger fw-bold" style="font-size: 0.9rem" for="resetToggle">Reset all expenses & cards?</label>
+            </div>
+
+            <button class="btn btn-fms w-100 py-3 fw-bold rounded-4 shadow-sm" onclick="checkResetFlag()" style="background: #0000ff !important; font-size: 1.1rem; border-radius: 20px !important">Update Balance</button>
+          </div>
+        </div>
+
+        <div id="reset-confirm-view" class="d-none p-5 text-center">
+          <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-4 mb-3">
+            <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+          </div>
+          <h3 class="fw-bold text-dark">Clear All Data?</h3>
+          <p class="text-muted mb-4">This will wipe your history. Are you sure?</p>
+
+          <div class="d-flex gap-3">
+            <button class="btn btn-light rounded-pill fw-bold flex-grow-1 py-3" onclick="toggleResetConfirm(false)">Go Back</button>
+            <button class="btn btn-danger rounded-pill fw-bold flex-grow-1 py-3" onclick="submitBudgetAdjustment()">Clear All</button>
+          </div>
         </div>
       </div>
     </div>
@@ -218,5 +236,32 @@
   // Run immediately and update every minute
   updateDateTime();
   setInterval(updateDateTime, 60000);
+</script>
+
+<script>
+  // Functions to handle the budget adjustments made by clicking the Adjust Budget buton
+  // in accounts.html
+  function adjustValue(amount) {
+    const input = document.getElementById("newBalanceInput");
+    input.value = Math.max(0, parseInt(input.value) + amount);
+  }
+
+  function checkResetFlag() {
+    const isChecked = document.getElementById("resetToggle").checked;
+    if (isChecked) {
+      document.getElementById("balance-setup-view").classList.add("d-none");
+      document.getElementById("reset-confirm-view").classList.remove("d-none");
+    } else {
+      submitBudgetAdjustment();
+    }
+  }
+
+  function toggleResetConfirm(show) {
+    if (!show) {
+      document.getElementById("balance-setup-view").classList.remove("d-none");
+      document.getElementById("reset-confirm-view").classList.add("d-none");
+    }
+  }
+  // ... your existing submitBudgetAdjustment fetch logic here
 </script>
 {% endblock %}
