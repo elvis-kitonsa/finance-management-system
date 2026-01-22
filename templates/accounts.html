@@ -55,24 +55,42 @@
         <p class="small text-muted"><i class="bi bi-info-circle me-1"></i> This amount is reflected across your entire dashboard.</p>
       </div>
 
-      <h5 class="fw-bold mb-3">Category Allocations</h5>
-      <div class="card glass-card p-4">
-        <div class="mb-4">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="fw-bold">🍽️ Food & Dining</span>
-            <span class="small text-muted">Budget: 500,000 | Spent: 120,000</span>
+      <!-- Category Allocations Section -->
+      <div class="card border-0 shadow-sm p-4 mt-4" style="border-radius: 30px; background: #ffffff">
+        <h5 class="fw-bold mb-4" style="font-style: normal !important; color: #1a1d1f">Category Allocations</h5>
+
+        <div class="category-group mb-4" id="group-food">
+          <div class="d-flex justify-content-between align-items-center mb-2 p-2 rounded-4 hover-bg-light" style="cursor: pointer" onclick="toggleCategory('food-items')">
+            <div class="d-flex align-items-center">
+              <div class="icon-circle me-3" style="background: #fff4e6; color: #fd7e14; padding: 10px; border-radius: 12px">
+                <i class="bi bi-egg-fried fs-5"></i>
+              </div>
+              <div>
+                <span class="fw-bold d-block" style="font-style: normal">Food & Dining</span>
+                <small class="text-muted">Budget: UGX <span class="cat-budget">500,000</span></small>
+              </div>
+            </div>
+            <div class="text-end">
+              <span class="fw-bold d-block text-primary">UGX <span id="spent-food">120,000</span></span>
+              <small class="text-muted">Spent</small>
+            </div>
           </div>
-          <div class="progress" style="height: 10px; border-radius: 5px">
-            <div class="progress-bar bg-fms-blue" style="width: 24%"></div>
+
+          <div class="progress mb-2" style="height: 8px; border-radius: 10px; background: #f0f2f5">
+            <div id="bar-food" class="progress-bar bg-primary" role="progressbar" style="width: 24%; border-radius: 10px"></div>
           </div>
-        </div>
-        <div class="mb-2">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="fw-bold">⛽ Transport</span>
-            <span class="small text-muted">Budget: 200,000 | Spent: 150,000</span>
-          </div>
-          <div class="progress" style="height: 10px; border-radius: 5px">
-            <div class="progress-bar bg-warning" style="width: 75%"></div>
+
+          <div id="food-items" class="ms-4 mt-3 ps-3 border-start d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded-3 shadow-sm expense-row" data-expense-id="1">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-pencil-square text-muted small" onclick="editExpenseDesc(1)" style="cursor: pointer"></i>
+                <span class="small fw-bold text-dark desc-text" style="font-style: normal">Cafe Javas Lunch</span>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <span class="fw-bold text-dark amount-display" onclick="makeAmountEditable(this, 1)" style="cursor: pointer">85,000</span>
+                <i class="bi bi-trash3 text-danger small" onclick="deleteExpense(1)" style="cursor: pointer"></i>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -263,5 +281,103 @@
     }
   }
   // ... your existing submitBudgetAdjustment fetch logic here
+</script>
+
+<script>
+  // 1. Toggle the drill-down view for grouped expenses
+  function toggleCategory(id) {
+    const list = document.getElementById(id);
+    if (list) {
+      list.classList.toggle("d-none");
+    }
+  }
+
+  // 2. Transform static amount into an editable input
+  function makeAmountEditable(element, id) {
+    const currentVal = element.innerText.replace(/,/g, "");
+    const input = document.createElement("input");
+
+    input.type = "number";
+    input.value = currentVal;
+    // Styling to match your premium UI
+    input.className = "form-control form-control-sm fw-bold border-primary shadow-sm text-end";
+    input.style.width = "120px";
+    input.style.borderRadius = "10px";
+
+    // When the user clicks away or presses Enter
+    input.onblur = function () {
+      const newVal = parseInt(this.value) || 0;
+      element.innerText = newVal.toLocaleString();
+      this.replaceWith(element);
+
+      // Update the category totals and progress bars
+      updateCategoryMath("food");
+    };
+
+    input.onkeydown = function (e) {
+      if (e.key === "Enter") this.blur();
+    };
+
+    element.replaceWith(input);
+    input.focus();
+  }
+
+  // 3. Logic to recalculate Category Totals and Progress Bars
+  function updateCategoryMath(categoryCode) {
+    let total = 0;
+    // Sum all amounts in this specific category group
+    const items = document.querySelectorAll(`#${categoryCode}-items .amount-display`);
+
+    items.forEach((item) => {
+      total += parseInt(item.innerText.replace(/,/g, "")) || 0;
+    });
+
+    // Update the 'Spent' label (e.g., spent-food)
+    const spentLabel = document.getElementById(`spent-${categoryCode}`);
+    if (spentLabel) {
+      spentLabel.innerText = total.toLocaleString();
+    }
+
+    // Update the Progress Bar (e.g., bar-food)
+    const bar = document.getElementById(`bar-${categoryCode}`);
+    const budgetElement = document.querySelector(`#group-${categoryCode} .cat-budget`);
+
+    if (bar && budgetElement) {
+      const budget = parseInt(budgetElement.innerText.replace(/,/g, ""));
+      const percent = Math.min((total / budget) * 100, 100);
+      bar.style.width = percent + "%";
+
+      // Visual feedback: change color to danger if over-budget
+      if (percent >= 100) {
+        bar.classList.remove("bg-primary");
+        bar.classList.add("bg-danger");
+      } else {
+        bar.classList.remove("bg-danger");
+        bar.classList.add("bg-primary");
+      }
+    }
+  }
+
+  // 4. Delete an individual expense task
+  function deleteExpense(id) {
+    if (confirm("Permanently delete this to-do item? This will update your available budget.")) {
+      const row = document.querySelector(`[data-expense-id='${id}']`);
+      if (row) {
+        row.remove();
+        updateCategoryMath("food");
+      }
+    }
+  }
+
+  // 5. Edit Description logic
+  function editExpenseDesc(id) {
+    const row = document.querySelector(`[data-expense-id='${id}']`);
+    const descSpan = row.querySelector(".desc-text");
+    const newDesc = prompt("Edit Task Description:", descSpan.innerText);
+
+    if (newDesc && newDesc.trim() !== "") {
+      descSpan.innerText = newDesc.trim();
+    }
+  }
 </script>
 {% endblock %}
