@@ -17,7 +17,7 @@
         --bg-soft: #f4f7fe;
         --text-dark: #1a1d1f;
         --text-muted: #6f767e;
-        --fms-blue: #0000ff; /* This is your vibrant button blue */
+        --fms-blue: #0000ff; /* The deep blue from your Record Expense button */
         --fms-blue-soft: rgba(0, 0, 255, 0.1);
       }
 
@@ -79,11 +79,11 @@
       }
 
       /* --- RESTORED BUTTON STYLING --- */
-      /* This ensures buttons in modals and the dashboard stay vibrant blue */
       .btn-primary,
       .btn-fms,
       .btn-update,
-      button[type="submit"] {
+      button[type="submit"],
+      .btn-fms-primary {
         background-color: var(--fms-blue) !important;
         border: none !important;
         color: white !important;
@@ -93,38 +93,38 @@
         box-shadow: 0 4px 12px rgba(0, 0, 255, 0.3) !important;
       }
 
-      /* Styles for the +/- buttons in your popup */
-      .btn-outline-primary {
-        border-color: var(--fms-blue) !important;
-        color: var(--fms-blue) !important;
-      }
-
-      .btn-outline-primary:hover {
-        background-color: var(--fms-blue) !important;
-        color: white !important;
-      }
-
-      /* --- THE VIBRANT BLUE ICON LOCK --- */
-      a.fms-avatar.dropdown-toggle {
+      /* --- THE VIBRANT BLUE ICON LOCK (FINAL FIX) --- */
+      /* This targets the exact ID from your HTML to force the color */
+      #profileDropdown.user-avatar {
+        background: #0000ff !important; /* Forces the deep blue background */
+        background-color: #0000ff !important;
         width: 45px !important;
         height: 45px !important;
         border-radius: 50% !important;
-        background-color: #0000ff !important;
-        color: #ffffff !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        font-weight: 700 !important;
         text-decoration: none !important;
         border: none !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 255, 0.2) !important;
       }
 
-      a.fms-avatar.dropdown-toggle::after {
+      /* Ensures initials are perfectly white and centered */
+      #user-initials {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 0.95rem !important;
+        line-height: 1 !important;
+        display: block !important;
+      }
+
+      /* Removes the bootstrap dropdown arrow */
+      #profileDropdown.user-avatar::after {
         display: none !important;
       }
 
       /* --- Dropdown Styling --- */
-      .fms-dropdown-menu {
+      .dropdown-menu {
         border-radius: 18px !important;
         border: none !important;
         padding: 12px !important;
