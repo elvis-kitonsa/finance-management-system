@@ -330,7 +330,7 @@ function markAsPaid() {
   markPaidBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
   markPaidBtn.disabled = true;
 
-  fetch(`/mark_paid/${expenseId}`, {
+  fetch(`/mark_as_paid/${expenseId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
   })

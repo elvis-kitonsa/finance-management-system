@@ -340,6 +340,25 @@ def analytics():
 def security():
     return render_template('security.html')
 
+@app.route('/mark_as_paid/<int:expense_id>', methods=['POST'])
+@login_required
+def mark_as_paid(expense_id):
+    # Find the expense or return a 404 if it doesn't exist
+    expense = Expense.query.get_or_404(expense_id)
+    
+    # Ownership Check: Ensure users can't mark someone else's expense as paid
+    if expense.user_id != current_user.id:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 403
+
+    try:
+        # Update the status
+        expense.is_covered = True
+        db.session.commit()
+        return jsonify({"status": "success", "message": "Transaction updated!"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # --- DATABASE INITIALIZATION ---
 
 with app.app_context():
