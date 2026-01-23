@@ -144,7 +144,7 @@ def dashboard():
                            total_balance=total_balance,
                            total_spent=total_spent,
                            total_remaining=total_remaining,
-                           amount_saved=amount_saved,
+                           total_saved=amount_saved,
                            initials=initials) # Send initials to the frontend
 
 @app.route('/update_balance', methods=['POST'])
