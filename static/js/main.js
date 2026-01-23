@@ -62,9 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- INTEGRATED SECTION 8: INLINE EDITING ---
-  // This must stay inside DOMContentLoaded to find the icon on load
-  // The icon we are talking about here is the pen-in-paper icon attached to Description in the
   // Transaction Receipt that pops up when a registered expense is clicked on.
   const editIcon = document.getElementById("enable-edit-desc");
   if (editIcon) {
@@ -111,19 +108,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 4. TRANSACTION RECEIPT POPUP
 // Formats and displays expense details in a clean alert box
-function viewExpenseDetails(title, category, amount, time) {
+function viewExpenseDetails(id, title, category, amount, time, isCovered) {
+  // 1. Format the money
   const formattedAmount = new Intl.NumberFormat("en-UG").format(amount);
-  const detailMsg = `
-📊 TRANSACTION RECEIPT
---------------------------
-📝 Description: ${title}
-🏷️ Category: ${category}
-💰 Amount: UGX ${formattedAmount}
-⏰ Date/Time: ${time}
---------------------------
-Status: ✅ Transaction Verified
-    `;
-  alert(detailMsg);
+
+  // 2. Inject data into your Modal elements
+  document.getElementById("modalExpenseId").value = id;
+  document.getElementById("modalDescription").innerText = title;
+  document.getElementById("modalCategory").innerText = category;
+  document.getElementById("modalAmount").innerText = `UGX ${formattedAmount}`;
+  document.getElementById("modalDateTime").innerText = time;
+
+  // 3. Handle Button Visibility (Hide "Mark as Paid" if already covered)
+  const markPaidBtn = document.getElementById("markPaidBtn");
+  if (isCovered === "True" || isCovered === true) {
+    markPaidBtn.classList.add("d-none");
+  } else {
+    markPaidBtn.classList.remove("d-none");
+  }
+
+  // 4. Show the Soft-Edged Modal
+  const myModal = new bootstrap.Modal(document.getElementById("expenseDetailModal"));
+  myModal.show();
 }
 
 // 5. LIVE NAVBAR DATE & DAY

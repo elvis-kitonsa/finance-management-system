@@ -322,3 +322,43 @@ Note: Applied specifically to the "Add Expense" button in the expense modal
   font-weight: 700 !important;
   letter-spacing: 0.5px;
 }
+
+/* Premium Modal Refinement */
+.expense-modal-card {
+  border-radius: 35px !important; /* Extra soft corners for 2026 aesthetics */
+  border: none !important;
+  box-shadow: 0 20px 50px rgba(0, 71, 255, 0.15) !important; /* Soft vibrant blue glow */
+}
+
+/* Matching the Vibrant Brand Blue */
+:root {
+  --vibrant-blue: #0047ff; /* The blue from your Record Expense button */
+}
+
+#expenseDetailModal .text-success,
+#expenseDetailModal .status-badge-container .bi-check-circle-fill {
+  color: var(--vibrant-blue) !important;
+}
+
+#expenseDetailModal .btn-success.rounded-pill {
+  background: var(--vibrant-blue) !important;
+  border: none !important;
+  padding: 12px 24px;
+  box-shadow: 0 4px 15px rgba(0, 71, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+#expenseDetailModal .btn-success.rounded-pill:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 71, 255, 0.4);
+}
+
+/* Detail list styling for better readability */
+.detail-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+.detail-item:last-child {
+  border-bottom: none;
+}
