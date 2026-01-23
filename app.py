@@ -180,11 +180,11 @@ def add_expense():
             amount=amount,
             user_id=current_user.id,
             date_to_handle=datetime.now(),
-            is_covered=True # Default to true if you want immediate balance impact
+            is_covered=False # TARGET 1: Set to False so it appears as "Pending"
         )
         
-        # Deduct from balance immediately when an expense/saving is added
-        current_user.total_balance -= amount
+        # TARGET 2: Remove the automatic deduction. 
+        # Money should only leave the balance when 'Mark as Paid' is clicked
         
         db.session.add(new_entry)
         db.session.commit()
@@ -351,10 +351,14 @@ def mark_as_paid(expense_id):
         return jsonify({"status": "error", "message": "Unauthorized"}), 403
 
     try:
-        # Update the status
-        expense.is_covered = True
-        db.session.commit()
-        return jsonify({"status": "success", "message": "Transaction updated!"})
+        # TARGET 3: Deduct the amount from the balance ONLY NOW
+        if not expense.is_covered:
+            current_user.total_balance -= expense.amount
+            expense.is_covered = True
+            db.session.commit()
+            return jsonify({"status": "success", "new_balance": current_user.total_balance})
+        
+        return jsonify({"status": "error", "message": "Already paid"})
     except Exception as e:
         db.session.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
