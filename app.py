@@ -174,6 +174,24 @@ def add_expense():
     data = request.get_json()
     try:
         amount = float(data['amount'])
+
+        # --- NEW BUDGET GUARD START ---
+        # 1. Calculate how much the user has already spent or saved
+        all_expenses = Expense.query.filter_by(user_id=current_user.id).all()
+        total_spent = sum(exp.amount for exp in all_expenses if exp.category != 'Savings')
+        amount_saved = sum(exp.amount for exp in all_expenses if exp.category == 'Savings')
+        
+        # 2. Determine the actual remaining balance
+        total_remaining = current_user.total_balance - (total_spent + amount_saved)
+
+        # 3. Validation: Stop the process if the new amount is too high
+        if amount > total_remaining:
+            return jsonify({
+                "status": "error", 
+                "message": f"Insufficient funds. You only have UGX {total_remaining:,.0f} remaining."
+            }), 400
+        # --- NEW BUDGET GUARD END ---
+        
         new_entry = Expense(
             title=data['title'],
             category=data['category'],

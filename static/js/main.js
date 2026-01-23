@@ -401,3 +401,31 @@ clearDescBtn.addEventListener("click", function () {
   this.classList.add("d-none");
   descInput.focus();
 });
+
+// 10. REAL-TIME EXPENSE AMOUNT VALIDATION
+// Disables the "Add Expense" button if the entered amount exceeds the remaining balance
+// 1. Target the elements
+const amountInput = document.getElementById("expense-amount"); // The input in the modal
+const addBtn = document.getElementById("addExpenseBtn"); // The blue "Add Expense" button
+
+amountInput.addEventListener("input", function () {
+  // 2. Get the actual numeric limit from your dashboard card
+  const rawLimit = document.getElementById("current-remaining-val").innerText;
+  const limit = parseFloat(rawLimit.replace(/[^0-9.-]+/g, ""));
+
+  // 3. Get what the user is currently typing
+  const enteredAmount = parseFloat(this.value);
+
+  // 4. Comparison Logic
+  if (enteredAmount > limit) {
+    this.style.border = "2px solid #dc3545"; // Turn border Red
+    this.style.color = "#dc3545";
+    addBtn.disabled = true; // Lock the button
+    addBtn.innerText = "Insufficient Balance";
+  } else {
+    this.style.border = ""; // Reset to normal
+    this.style.color = "";
+    addBtn.disabled = false; // Unlock the button
+    addBtn.innerText = "Add Expense";
+  }
+});
