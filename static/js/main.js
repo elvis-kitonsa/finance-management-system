@@ -213,14 +213,7 @@ function handleRowClick(row) {
 
   // 3.5 Status Logic: Show/Hide "Mark as Paid" button
   // This checks the expense's status and adjusts button visibility accordingly
-  const isCovered = row.getAttribute("data-covered") === "True";
-  const markPaidBtn = document.getElementById("markPaidBtn");
-
-  if (isCovered) {
-    markPaidBtn.classList.add("d-none"); // Hide if already paid
-  } else {
-    markPaidBtn.classList.remove("d-none"); // Show if pending
-  }
+  document.getElementById("markPaidBtn").classList.remove("d-none");
 
   // 4. Trigger the Modal (Using the Bootstrap 5 static method)
   const modalElement = document.getElementById("expenseDetailModal");
