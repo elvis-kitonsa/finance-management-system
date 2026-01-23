@@ -289,51 +289,63 @@
   </div>
 </div>
 
+<!-- Expense Detail Modal: View and manage individual expense details -->
+<!-- This modal shows detailed information about a selected expense and allows marking it as paid or deleting it -->
 <div class="modal fade" id="expenseDetailModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content expense-modal-card">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="fw-bold text-dark mb-0">Transaction Receipt</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px; overflow: hidden">
+      <div class="modal-header border-0 p-4 pb-2">
+        <h5 class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px">Transaction Receipt</h5>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+
+      <div class="modal-body p-4 pt-0">
         <div id="receipt-view">
-          <div class="text-center mb-4">
-            <div class="status-badge-container"><i class="bi bi-check-circle-fill text-success fs-1"></i></div>
-            <div class="fw-bold fs-4" id="modalAmount">UGX 0</div>
-            <div class="text-muted small text-uppercase">Transaction Verified</div>
+          <div class="text-center mb-5 mt-3">
+            <div class="status-badge-container mb-3">
+              <i class="bi bi-check-circle-fill text-primary" style="font-size: 3.5rem; filter: drop-shadow(0 4px 8px rgba(0, 0, 255, 0.2))"></i>
+            </div>
+            <h2 class="fw-bold text-dark mb-1" id="modalAmount">UGX 0</h2>
+            <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 1px">Transaction Verified</div>
           </div>
-          <div class="detail-list">
-            <div class="detail-item">
-              <span class="label"><i class="bi bi-pencil-square me-2 text-primary" id="enable-edit-desc" style="cursor: pointer"></i> Description: </span>
-              <span class="value fw-medium" id="modalDescription">-</span>
+
+          <div class="detail-list bg-light p-4" style="border-radius: 20px">
+            <div class="detail-item d-flex justify-content-between mb-3 border-bottom pb-2">
+              <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-pencil-square me-2"></i>Description</span>
+              <span class="fw-bold text-dark" id="modalDescription">-</span>
             </div>
-            <div class="detail-item">
-              <span class="label"><i class="bi bi-tag me-2"></i>Category: </span>
-              <span class="value" id="modalCategory">-</span>
+            <div class="detail-item d-flex justify-content-between mb-3 border-bottom pb-2">
+              <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-tag me-2"></i>Category</span>
+              <span class="badge bg-white text-primary border shadow-sm px-3" id="modalCategory">-</span>
             </div>
-            <div class="detail-item">
-              <span class="label"><i class="bi bi-calendar3 me-2"></i>Date & Time: </span>
-              <span class="value" id="modalDateTime">-</span>
+            <div class="detail-item d-flex justify-content-between">
+              <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-calendar3 me-2"></i>Date & Time</span>
+              <span class="fw-medium text-dark" id="modalDateTime">-</span>
             </div>
           </div>
         </div>
+
         <div id="confirm-view" class="d-none text-center py-4">
-          <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-3 mb-3">
-            <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+          <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-4 mb-3">
+            <i class="bi bi-exclamation-triangle-fill fs-1"></i>
           </div>
-          <h5 class="fw-bold">Delete Expense?</h5>
+          <h4 class="fw-bold text-dark">Delete Expense?</h4>
+          <p class="text-muted">This action cannot be undone.</p>
         </div>
       </div>
-      <div class="modal-footer border-0 d-flex gap-2">
+
+      <div class="modal-footer border-0 p-4 pt-0">
         <input type="hidden" id="modalExpenseId" value="" />
-        <div id="receipt-footer-btns" class="w-100 d-flex gap-2">
-          <button type="button" id="markPaidBtn" class="btn btn-success rounded-pill fw-bold flex-grow-1" onclick="markAsPaid()"><i class="bi bi-check-lg me-2"></i>Mark as Paid</button>
-          <button type="button" class="btn btn-outline-danger rounded-pill fw-bold" onclick="toggleDeleteConfirm(true)"><i class="bi bi-trash3"></i></button>
+        <div id="receipt-footer-btns" class="w-100 d-flex gap-3">
+          <button type="button" id="markPaidBtn" class="btn btn-primary rounded-4 py-3 fw-bold flex-grow-1 shadow-sm" onclick="markAsPaid()" style="background: #0000ff !important"><i class="bi bi-check-lg me-2"></i>Mark as Paid</button>
+          <button type="button" class="btn btn-outline-danger rounded-4 py-3 px-4" onclick="toggleDeleteConfirm(true)">
+            <i class="bi bi-trash3"></i>
+          </button>
         </div>
+
         <div id="confirm-footer-btns" class="w-100 d-flex gap-2 d-none">
-          <button type="button" class="btn btn-danger rounded-pill fw-bold flex-grow-1" onclick="executeDelete()">Yes, Delete</button>
-          <button type="button" class="btn btn-light rounded-pill fw-bold flex-grow-1" onclick="toggleDeleteConfirm(false)">Cancel</button>
+          <button type="button" class="btn btn-danger rounded-4 py-3 fw-bold flex-grow-1" onclick="executeDelete()">Yes, Delete</button>
+          <button type="button" class="btn btn-light rounded-4 py-3 fw-bold flex-grow-1" onclick="toggleDeleteConfirm(false)">Cancel</button>
         </div>
       </div>
     </div>
@@ -359,5 +371,26 @@
     this.style.display = "none";
     descInput.focus();
   });
+
+  // Function to mark an expense as paid
+  // What this means is that the expense's status is updated in the backend
+  function markAsPaid() {
+    const expenseId = document.getElementById("modalExpenseId").value;
+
+    fetch(`/mark_as_paid/${expenseId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          // Refresh the page to show the "Covered" status and updated remaining balance
+          location.reload();
+        } else {
+          alert("Error updating expense: " + data.message);
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
 </script>
 {% endblock %}
