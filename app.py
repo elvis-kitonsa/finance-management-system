@@ -191,7 +191,7 @@ def add_expense():
                 "message": f"Insufficient funds. You only have UGX {total_remaining:,.0f} remaining."
             }), 400
         # --- NEW BUDGET GUARD END ---
-        
+
         new_entry = Expense(
             title=data['title'],
             category=data['category'],
@@ -272,6 +272,7 @@ def mark_paid(expense_id):
 
     try:
         # 3. Update the status and save to the database
+        # The dashboard math will automatically handle the "Remaining" display.
         expense.is_covered = True
         db.session.commit()
         return jsonify({"status": "success"})
@@ -357,29 +358,6 @@ def analytics():
 @login_required
 def security():
     return render_template('security.html')
-
-@app.route('/mark_as_paid/<int:expense_id>', methods=['POST'])
-@login_required
-def mark_as_paid(expense_id):
-    # Find the expense or return a 404 if it doesn't exist
-    expense = Expense.query.get_or_404(expense_id)
-    
-    # Ownership Check: Ensure users can't mark someone else's expense as paid
-    if expense.user_id != current_user.id:
-        return jsonify({"status": "error", "message": "Unauthorized"}), 403
-
-    try:
-        # TARGET 3: Deduct the amount from the balance ONLY NOW
-        if not expense.is_covered:
-            current_user.total_balance -= expense.amount
-            expense.is_covered = True
-            db.session.commit()
-            return jsonify({"status": "success", "new_balance": current_user.total_balance})
-        
-        return jsonify({"status": "error", "message": "Already paid"})
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"status": "error", "message": str(e)}), 500
 
 # --- DATABASE INITIALIZATION ---
 

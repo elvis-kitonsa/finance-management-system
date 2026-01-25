@@ -41,12 +41,15 @@
 </header>
 
 <main class="p-4">
+  <!-- Summary Cards Section -->
+  <!-- Displays key financial metrics in a responsive grid layout -->
   <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-5">
     <div class="col">
+      <!-- Total Amount Card in the Dashboard -->
       <div class="card glass-card h-100 p-4" style="overflow: visible !important; border-radius: 24px">
         <div class="d-flex justify-content-between align-items-center">
           <div style="min-width: 0">
-            <p class="card-label text-muted small fw-bold mb-1">Total Balance</p>
+            <p class="card-label text-muted small fw-bold mb-1">Total Amount Set</p>
             <h3 class="balance-text mb-0 fw-bold" id="display-total-balance">UGX {{ "{:,.0f}".format(total_balance) }}</h3>
           </div>
           <div class="icon-box shadow-sm d-flex align-items-center justify-content-center flex-shrink-0 ms-3" style="background: rgba(0, 98, 255, 0.1); color: #0000ff; width: 50px; height: 50px; border-radius: 15px; cursor: pointer" data-bs-toggle="modal" data-bs-target="#updateBalanceModal">
