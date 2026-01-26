@@ -124,30 +124,46 @@
       </div>
     </div>
 
+    <!-- Export Records Section -->
+    <!-- This section allows users to generate transaction receipts showing their financial activity -->
     <div class="col-xl-4">
-      <h5 class="fw-bold mb-3">Savings Catalog</h5>
+      <h5 class="fw-bold mb-3">Export Records</h5>
       <div class="card glass-card p-0 overflow-hidden">
         <div class="p-4 border-bottom bg-light-subtle">
-          <button class="btn btn-outline-fms w-100 fw-bold rounded-4"><i class="bi bi-plus-circle me-2"></i>New Savings Goal</button>
+          <p class="text-muted small mb-0">Generate a professional transaction receipt based on your capital of <strong>UGX {{ "{:,.0f}".format(total_balance) }}</strong>.</p>
         </div>
-        <div class="list-group list-group-flush">
-          {% for goal in savings_goals %}
-          <div class="list-group-item bg-transparent p-4 border-0 border-bottom">
-            <div class="d-flex align-items-center mb-2">
-              <div class="icon-box me-3" style="background: var(--fms-blue-soft); color: var(--fms-blue)">
-                <i class="bi {{ goal.icon }}"></i>
-              </div>
-              <h6 class="fw-bold mb-0">{{ goal.name }}</h6>
+
+        <div class="p-4">
+          <form id="statementForm">
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-muted">REPORT TYPE</label>
+              <select class="form-select border-0 bg-light rounded-4" id="reportType" onchange="updatePickerVisibility()">
+                <option value="weekly">Weekly Statement</option>
+                <option value="monthly" selected>Monthly Statement</option>
+                <option value="yearly">Yearly Summary</option>
+              </select>
             </div>
-            <div class="d-flex justify-content-between small text-muted mb-1">
-              <span>Progress: {{ (goal.current / goal.target * 100)|round|int }}%</span>
-              <span>{{ "{:,.0f}".format(goal.current) }} / {{ "{:,.0f}".format(goal.target) }}</span>
+
+            <div class="mb-3 d-none" id="weeklyGroup">
+              <label class="form-label small fw-bold text-muted">SELECT DATE IN WEEK</label>
+              <input type="date" class="form-control border-0 bg-light rounded-4" id="weekPicker" />
             </div>
-            <div class="progress" style="height: 6px">
-              <div class="progress-bar bg-success" style="width: {{ (goal.current / goal.target * 100) }}%"></div>
+
+            <div class="mb-3" id="monthlyGroup">
+              <label class="form-label small fw-bold text-muted">SELECT MONTH</label>
+              <input type="month" class="form-control border-0 bg-light rounded-4" id="monthPicker" value="2026-01" />
             </div>
-          </div>
-          {% endfor %}
+
+            <div class="mb-4 d-none" id="yearlyGroup">
+              <label class="form-label small fw-bold text-muted">SELECT YEAR</label>
+              <select class="form-select border-0 bg-light rounded-4" id="yearPicker">
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+              </select>
+            </div>
+
+            <button type="button" onclick="generateReceipt()" class="btn btn-fms w-100 fw-bold rounded-4 py-2"><i class="bi bi-printer me-2"></i>Generate Receipt</button>
+          </form>
         </div>
       </div>
     </div>
@@ -433,6 +449,34 @@
         }
       })
       .catch((error) => console.error("Error:", error));
+  }
+</script>
+
+<script>
+  function updatePickerVisibility() {
+    const type = document.getElementById("reportType").value;
+
+    // Toggle groups based on selection
+    document.getElementById("weeklyGroup").classList.toggle("d-none", type !== "weekly");
+    document.getElementById("monthlyGroup").classList.toggle("d-none", type !== "monthly");
+    document.getElementById("yearlyGroup").classList.toggle("d-none", type !== "yearly");
+  }
+
+  function generateReceipt() {
+    const type = document.getElementById("reportType").value;
+    let period;
+
+    if (type === "weekly") period = document.getElementById("weekPicker").value;
+    else if (type === "monthly") period = document.getElementById("monthPicker").value;
+    else period = document.getElementById("yearPicker").value;
+
+    if (!period) {
+      alert("Please select a valid time period.");
+      return;
+    }
+
+    // Opens a new printable tab with filtered data
+    window.open(`/print_receipt?type=${type}&period=${period}`, "_blank");
   }
 </script>
 
