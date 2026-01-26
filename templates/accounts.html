@@ -1,7 +1,3 @@
-<!-- templates/accounts.html -->
-<!-- extends base.html (The skeleton) for these templates -->
-<!-- attached to the /accounts route in app.py -->
-
 {% extends "base.html" %} {% block content %}
 
 <header class="top-nav d-flex justify-content-between align-items-center">
@@ -40,6 +36,7 @@
     </div>
   </div>
 </header>
+
 <main class="p-4">
   <div class="row g-4">
     <div class="col-xl-8">
@@ -47,22 +44,36 @@
         <div class="d-flex justify-content-between align-items-start mb-3">
           <div>
             <p class="card-label mb-1">Total Amount Set</p>
-            <br />
             <h2 class="fw-bold text-fms-blue">UGX {{ "{:,.0f}".format(total_balance) }}</h2>
           </div>
-          <br />
-
           <button class="btn btn-fms rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#adjustBudgetModal"><i class="bi bi-pencil-square me-2"></i>Adjust Budget</button>
         </div>
+
         <hr class="opacity-10" />
-        <p class="small text-muted"><i class="bi bi-info-circle me-1"></i> This amount is reflected across your entire dashboard.</p>
+
+        <div class="p-3 bg-light rounded-4 border-0 mt-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px">Global Valuation</span>
+            <select class="form-select form-select-sm border-0 bg-white shadow-sm w-auto rounded-3 fw-bold" id="global-currency-picker" onchange="convertLive()" style="font-size: 0.75rem">
+              <option value="USD" selected>USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="KES">KES</option>
+            </select>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="icon-box-sm bg-primary-subtle text-primary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px">
+              <i class="bi bi-globe" style="font-size: 0.9rem"></i>
+            </div>
+            <h4 class="fw-bold mb-0" id="converted-display" style="font-size: 1.25rem">Calculating...</h4>
+          </div>
+        </div>
+
+        <p class="small text-muted mt-3 mb-0"><i class="bi bi-info-circle me-1"></i> This amount is reflected across your entire dashboard.</p>
       </div>
 
-      <!-- Category Allocations Section with Accordion for Expenses -->
       <div class="card glass-card p-4 border-0 mb-4" style="border-radius: 28px">
         <h5 class="fw-bold mb-4" style="font-style: normal; color: #1a1d1f">Category Allocations</h5>
-
-        <!-- Accordion for Expense Categories -->
         <div class="accordion accordion-flush" id="categoryAccordion">
           {% for key, data in categories.items() %}
           <div class="accordion-item border-0 mb-3 bg-light" style="border-radius: 20px; overflow: hidden">
@@ -71,7 +82,7 @@
                 <div class="d-flex flex-column w-100">
                   <div class="d-flex align-items-center justify-content-between mb-3">
                     <div class="d-flex align-items-center">
-                      <div class="icon-box me-3 shadow-sm d-flex align-items-center justify-content-center" style="background: {{ data.color }}26 !important; color: {{ data.color }} !important; width: 48px; height: 48px; border-radius: 14px; display: flex !important">
+                      <div class="icon-box me-3 shadow-sm d-flex align-items-center justify-content-center" style="background: {{ data.color }}26 !important; color: {{ data.color }} !important; width: 48px; height: 48px; border-radius: 14px;">
                         <i class="bi {{ data.icon }} fs-4"></i>
                       </div>
                       <div>
@@ -84,13 +95,11 @@
                       <small class="text-muted fw-bold" style="font-size: 0.65rem">TOTAL SPENT</small>
                     </div>
                   </div>
-
                   <div class="progress-wrapper">
                     <div class="progress" style="height: 10px; border-radius: 10px; background: #f0f2f5">
                       {% set percent = (data.total / total_balance * 100)|round(1) if total_balance > 0 else 0 %}
                       <div class="progress-bar" role="progressbar" style="width: {{ percent if percent <= 100 else 100 }}%; background-color: {{ data.color }};"></div>
                     </div>
-
                     <div class="d-flex justify-content-between mt-2">
                       <small class="fw-bold text-muted text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px"> Impact on Wallet </small>
                       <small class="fw-bold text-primary" style="font-size: 0.7rem"> {{ percent }}% OF TOTAL FUNDS </small>
@@ -99,7 +108,6 @@
                 </div>
               </button>
             </h2>
-
             <div id="group-{{ key }}" class="accordion-collapse collapse" data-bs-parent="#categoryAccordion">
               <div class="accordion-body px-4 py-3 border-top border-light">
                 {% for expense in data.expense_list %}
@@ -124,15 +132,12 @@
       </div>
     </div>
 
-    <!-- Export Records Section -->
-    <!-- This section allows users to generate transaction receipts showing their financial activity -->
     <div class="col-xl-4">
       <h5 class="fw-bold mb-3">Export Records</h5>
       <div class="card glass-card p-0 overflow-hidden">
         <div class="p-4 border-bottom bg-light-subtle">
           <p class="text-muted small mb-0">Generate a professional transaction receipt based on your capital of <strong>UGX {{ "{:,.0f}".format(total_balance) }}</strong>.</p>
         </div>
-
         <div class="p-4">
           <form id="statementForm">
             <div class="mb-3">
@@ -143,17 +148,14 @@
                 <option value="yearly">Yearly Summary</option>
               </select>
             </div>
-
             <div class="mb-3 d-none" id="weeklyGroup">
               <label class="form-label small fw-bold text-muted">SELECT DATE IN WEEK</label>
               <input type="date" class="form-control border-0 bg-light rounded-4" id="weekPicker" />
             </div>
-
             <div class="mb-3" id="monthlyGroup">
               <label class="form-label small fw-bold text-muted">SELECT MONTH</label>
               <input type="month" class="form-control border-0 bg-light rounded-4" id="monthPicker" value="2026-01" />
             </div>
-
             <div class="mb-4 d-none" id="yearlyGroup">
               <label class="form-label small fw-bold text-muted">SELECT YEAR</label>
               <select class="form-select border-0 bg-light rounded-4" id="yearPicker">
@@ -161,7 +163,6 @@
                 <option value="2025">2025</option>
               </select>
             </div>
-
             <button type="button" onclick="generateReceipt()" class="btn btn-fms w-100 fw-bold rounded-4 py-2"><i class="bi bi-printer me-2"></i>Generate Receipt</button>
           </form>
         </div>
@@ -169,74 +170,33 @@
     </div>
   </div>
 
-  <div class="mt-5">
-    <h5 class="fw-bold mb-3">Monthly Budget History (2026)</h5>
-    <div class="card glass-card">
-      <table class="table mb-0 table-hover">
-        <thead class="bg-light">
-          <tr>
-            <th class="ps-4 py-3 text-muted small">MONTH</th>
-            <th class="py-3 text-muted small">TOTAL BUDGET</th>
-            <th class="py-3 text-muted small">TOTAL SPENT</th>
-            <th class="pe-4 py-3 text-muted small text-end">SAVED</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="ps-4 fw-bold">January</td>
-            <td>UGX 1,500,000</td>
-            <td class="text-danger">-UGX 1,200,000</td>
-            <td class="pe-4 text-end text-success">+UGX 300,000</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Adjust Budget Modal -->
-  <!-- Similar structure to the Adjust Budget Modal in budgets.html -->
   <div class="modal fade" id="adjustBudgetModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 35px; background: #e9ecef; overflow: hidden">
         <div id="balance-setup-view" class="p-5">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold mb-0" style="color: #1a1d1f; font-size: 1.3rem">Adjust Budget</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size: 0.8rem"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-
           <div class="text-center">
             <label class="small fw-bold text-muted d-block mb-3 text-uppercase" style="letter-spacing: 1.5px; font-size: 0.7rem">Current Balance</label>
-
             <div class="d-flex align-items-center justify-content-center gap-4">
-              <button class="btn btn-link text-muted p-0" onclick="adjustValue(-25000)" style="text-decoration: none">
-                <i class="bi bi-dash fs-2"></i>
-              </button>
-
-              <input type="number" id="newBalanceInput" class="form-control text-center fw-bold border-0 bg-white" value="{{ total_balance }}" style="width: 220px; height: 60px; border-radius: 18px; font-size: 1.8rem; color: #1a1d1f; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)" />
-
-              <button class="btn btn-link text-muted p-0" onclick="adjustValue(25000)" style="text-decoration: none">
-                <i class="bi bi-plus fs-2"></i>
-              </button>
+              <button class="btn btn-link text-muted p-0" onclick="adjustValue(-25000)" style="text-decoration: none"><i class="bi bi-dash fs-2"></i></button>
+              <input type="number" id="newBalanceInput" class="form-control text-center fw-bold border-0 bg-white" value="{{ total_balance }}" style="width: 200px; height: 60px; border-radius: 18px; font-size: 1.5rem" />
+              <button class="btn btn-link text-muted p-0" onclick="adjustValue(25000)" style="text-decoration: none"><i class="bi bi-plus fs-2"></i></button>
             </div>
-
-            <p class="small text-muted mt-3 fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px">Step size: 25,000 UGX</p>
-
             <div class="form-check form-switch d-flex align-items-center justify-content-center gap-3 my-4 p-0">
               <input class="form-check-input ms-0" type="checkbox" id="resetToggle" style="width: 45px; height: 22px; cursor: pointer" />
-              <label class="form-check-label text-danger fw-bold" style="font-size: 0.9rem" for="resetToggle">Reset all expenses & cards?</label>
+              <label class="form-check-label text-danger fw-bold" for="resetToggle">Reset all expenses & cards?</label>
             </div>
-
-            <button class="btn btn-fms w-100 py-3 fw-bold rounded-4 shadow-sm" onclick="checkResetFlag()" style="background: #0000ff !important; font-size: 1.1rem; border-radius: 20px !important">Update Balance</button>
+            <button class="btn btn-fms w-100 py-3 fw-bold rounded-4 shadow-sm" onclick="checkResetFlag()" style="background: #0000ff !important">Update Balance</button>
           </div>
         </div>
 
         <div id="reset-confirm-view" class="d-none p-5 text-center">
-          <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-4 mb-3">
-            <i class="bi bi-exclamation-triangle-fill fs-1"></i>
-          </div>
+          <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex p-4 mb-3"><i class="bi bi-exclamation-triangle-fill fs-1"></i></div>
           <h3 class="fw-bold text-dark">Clear All Data?</h3>
           <p class="text-muted mb-4">This will wipe your history. Are you sure?</p>
-
           <div class="d-flex gap-3">
             <button class="btn btn-light rounded-pill fw-bold flex-grow-1 py-3" onclick="toggleResetConfirm(false)">Go Back</button>
             <button class="btn btn-danger rounded-pill fw-bold flex-grow-1 py-3" onclick="submitBudgetAdjustment()">Clear All</button>
@@ -247,70 +207,50 @@
   </div>
 </main>
 
-<!-- JavaScript to handle budget adjustment -->
-<!-- This script will manage the increment/decrement of the budget and will talk to the backend to update the total balance -->
 <script>
-  function adjustValue(amount) {
-    const input = document.getElementById("newBalanceInput");
-    input.value = Math.max(0, parseInt(input.value) + amount);
+  // 1. DATA AND STATE
+  // We use the backend rates if available, otherwise fallback to manual rates
+  const backendRates = JSON.parse('{{ rates | tojson | safe if rates else "{}" }}');
+  const manualRates = { USD: 0.00027, EUR: 0.00025, GBP: 0.00021, KES: 0.039 };
+
+  // Choose backend rates first, then fallback
+  const allRates = Object.keys(backendRates).length > 0 ? backendRates : manualRates;
+  const ugxBalance = Number("{{ total_balance | safe }}");
+
+  // 2. CURRENCY CONVERTER
+  function convertLive() {
+    const selectedCurrency = document.getElementById("global-currency-picker").value;
+    const rate = allRates[selectedCurrency] || 0;
+    const convertedAmount = ugxBalance * rate;
+
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: selectedCurrency,
+      minimumFractionDigits: 2,
+    });
+
+    const display = document.getElementById("converted-display");
+    if (display) display.innerText = formatter.format(convertedAmount);
   }
 
-  function submitBudgetAdjustment() {
-    const newBalance = document.getElementById("newBalanceInput").value;
-    const shouldReset = document.getElementById("resetToggle").checked;
-
-    fetch("/update_balance", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        balance: newBalance,
-        should_reset: shouldReset,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          location.reload(); // Refresh to show the new UGX total and cleared cards
-        } else {
-          alert("Error: " + data.message);
-        }
-      });
-  }
-</script>
-
-<script>
-  // Function to update the current day and date on the Accounts page
+  // 3. DATE & TIME UPDATER
   function updateDateTime() {
     const now = new Date();
+    const dayEl = document.getElementById("current-day");
+    const dateEl = document.getElementById("current-date");
 
-    // Format Day (e.g., THURSDAY)
-    const dayOptions = { weekday: "uppercase" };
-    const dayString = now.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
-
-    // Format Date (e.g., Jan 22, 2026)
-    const dateOptions = { month: "short", day: "2-digit", year: "numeric" };
-    const dateString = now.toLocaleDateString("en-US", dateOptions);
-
-    document.getElementById("current-day").textContent = dayString;
-    document.getElementById("current-date").textContent = dateString;
+    if (dayEl) dayEl.textContent = now.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+    if (dateEl) dateEl.textContent = now.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
   }
 
-  // Run immediately and update every minute
-  updateDateTime();
-  setInterval(updateDateTime, 60000);
-</script>
-
-<script>
-  // Functions to handle the budget adjustments made by clicking the Adjust Budget buton
-  // in accounts.html
+  // 4. BUDGET ADJUSTMENT LOGIC
   function adjustValue(amount) {
     const input = document.getElementById("newBalanceInput");
-    input.value = Math.max(0, parseInt(input.value) + amount);
+    if (input) input.value = Math.max(0, parseInt(input.value || 0) + amount);
   }
 
   function checkResetFlag() {
-    const isChecked = document.getElementById("resetToggle").checked;
-    if (isChecked) {
+    if (document.getElementById("resetToggle").checked) {
       document.getElementById("balance-setup-view").classList.add("d-none");
       document.getElementById("reset-confirm-view").classList.remove("d-none");
     } else {
@@ -319,144 +259,33 @@
   }
 
   function toggleResetConfirm(show) {
-    if (!show) {
-      document.getElementById("balance-setup-view").classList.remove("d-none");
-      document.getElementById("reset-confirm-view").classList.add("d-none");
-    }
-  }
-  // ... your existing submitBudgetAdjustment fetch logic here
-</script>
-
-<script>
-  // 1. Toggle the drill-down view for grouped expenses
-  function toggleCategory(id) {
-    const list = document.getElementById(id);
-    if (list) {
-      list.classList.toggle("d-none");
-    }
+    document.getElementById("balance-setup-view").classList.toggle("d-none", show);
+    document.getElementById("reset-confirm-view").classList.toggle("d-none", !show);
   }
 
-  // 2. Transform static amount into an editable input
-  function makeAmountEditable(element, id) {
-    const currentVal = element.innerText.replace(/,/g, "");
-    const input = document.createElement("input");
-
-    input.type = "number";
-    input.value = currentVal;
-    // Styling to match your premium UI
-    input.className = "form-control form-control-sm fw-bold border-primary shadow-sm text-end";
-    input.style.width = "120px";
-    input.style.borderRadius = "10px";
-
-    // When the user clicks away or presses Enter
-    input.onblur = function () {
-      const newVal = parseInt(this.value) || 0;
-      element.innerText = newVal.toLocaleString();
-      this.replaceWith(element);
-
-      // Update the category totals and progress bars
-      updateCategoryMath("food");
-    };
-
-    input.onkeydown = function (e) {
-      if (e.key === "Enter") this.blur();
-    };
-
-    element.replaceWith(input);
-    input.focus();
-  }
-
-  // 3. Logic to recalculate Category Totals and Progress Bars
-  function updateCategoryMath(categoryCode) {
-    let total = 0;
-    // Sum all amounts in this specific category group
-    const items = document.querySelectorAll(`#${categoryCode}-items .amount-display`);
-
-    items.forEach((item) => {
-      total += parseInt(item.innerText.replace(/,/g, "")) || 0;
-    });
-
-    // Update the 'Spent' label (e.g., spent-food)
-    const spentLabel = document.getElementById(`spent-${categoryCode}`);
-    if (spentLabel) {
-      spentLabel.innerText = total.toLocaleString();
-    }
-
-    // Update the Progress Bar (e.g., bar-food)
-    const bar = document.getElementById(`bar-${categoryCode}`);
-    const budgetElement = document.querySelector(`#group-${categoryCode} .cat-budget`);
-
-    if (bar && budgetElement) {
-      const budget = parseInt(budgetElement.innerText.replace(/,/g, ""));
-      const percent = Math.min((total / budget) * 100, 100);
-      bar.style.width = percent + "%";
-
-      // Visual feedback: change color to danger if over-budget
-      if (percent >= 100) {
-        bar.classList.remove("bg-primary");
-        bar.classList.add("bg-danger");
-      } else {
-        bar.classList.remove("bg-danger");
-        bar.classList.add("bg-primary");
-      }
-    }
-  }
-
-  // 4. Delete an individual expense task
-  function deleteExpense(id) {
-    if (confirm("Permanently delete this item?")) {
-      // Find the expense by ID and remove it
-      // Note: You need to add 'data-expense-id' to your HTML div for this to work
-      fetch(`/delete_expense/${id}`, { method: "POST" })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "success") {
-            location.reload(); // Simplest way to update all totals
-          }
-        });
-    }
-  }
-
-  // 5. Edit Description logic
-  function editExpenseDesc(id) {
-    const row = document.querySelector(`[data-expense-id='${id}']`);
-    const descSpan = row.querySelector(".desc-text");
-    const newDesc = prompt("Edit Task Description:", descSpan.innerText);
-
-    if (newDesc && newDesc.trim() !== "") {
-      descSpan.innerText = newDesc.trim();
-    }
-  }
-
-  // 6. Delete Expense with balance reimbursement
-  function deleteExpense(expense_id) {
-    if (!confirm("Are you sure you want to delete this expense? Your balance will be reimbursed.")) return;
-
-    fetch(`/delete_expense/${expense_id}`, {
-      method: "DELETE",
+  function submitBudgetAdjustment() {
+    const balance = document.getElementById("newBalanceInput").value;
+    const shouldReset = document.getElementById("resetToggle").checked;
+    fetch("/update_balance", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ balance: balance, should_reset: shouldReset }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          // Option 1: Reload to update all math (Safest)
-          location.reload();
-
-          // Option 2: Or remove the element manually to be "snappy"
-          // document.querySelector(`[data-expense-id="${expense_id}"]`).remove();
-        } else {
-          alert("Error: " + data.message);
-        }
-      })
-      .catch((error) => console.error("Error:", error));
+      .then((res) => res.json())
+      .then((data) => (data.status === "success" ? location.reload() : alert("Error: " + data.message)));
   }
-</script>
 
-<script>
+  // 5. EXPENSE DELETION
+  function deleteExpense(id) {
+    if (!confirm("Delete this expense? Your balance will be reimbursed.")) return;
+    fetch(`/delete_expense/${id}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then((data) => (data.status === "success" ? location.reload() : alert("Error: " + data.message)));
+  }
+
+  // 6. REPORT GENERATION
   function updatePickerVisibility() {
     const type = document.getElementById("reportType").value;
-
-    // Toggle groups based on selection
     document.getElementById("weeklyGroup").classList.toggle("d-none", type !== "weekly");
     document.getElementById("monthlyGroup").classList.toggle("d-none", type !== "monthly");
     document.getElementById("yearlyGroup").classList.toggle("d-none", type !== "yearly");
@@ -464,20 +293,17 @@
 
   function generateReceipt() {
     const type = document.getElementById("reportType").value;
-    let period;
+    let period = type === "weekly" ? document.getElementById("weekPicker").value : type === "monthly" ? document.getElementById("monthPicker").value : document.getElementById("yearPicker").value;
 
-    if (type === "weekly") period = document.getElementById("weekPicker").value;
-    else if (type === "monthly") period = document.getElementById("monthPicker").value;
-    else period = document.getElementById("yearPicker").value;
-
-    if (!period) {
-      alert("Please select a valid time period.");
-      return;
-    }
-
-    // Opens a new printable tab with filtered data
+    if (!period) return alert("Please select a valid time period.");
     window.open(`/print_receipt?type=${type}&period=${period}`, "_blank");
   }
-</script>
 
+  // INITIALIZE EVERYTHING ON LOAD
+  window.addEventListener("DOMContentLoaded", () => {
+    updateDateTime();
+    convertLive();
+    setInterval(updateDateTime, 60000);
+  });
+</script>
 {% endblock %}

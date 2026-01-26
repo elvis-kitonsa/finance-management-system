@@ -5,6 +5,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import extract
 from datetime import timedelta
+import requests
 import os
 
 
@@ -286,6 +287,22 @@ def mark_paid(expense_id):
 
 # --- ADDITIONAL PAGES ROUTES ---
 
+def get_live_rates():
+    try:
+        # Using a free API (Example: ExchangeRate-API)
+        # You can get a free key at https://www.exchangerate-api.com/
+        API_KEY = "your_api_key_here" 
+        url = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/UGX"
+        response = requests.get(url)
+        data = response.json()
+        if data["result"] == "success":
+            return data["conversion_rates"]
+    except Exception as e:
+        print(f"Rate fetch failed: {e}")
+    
+    # Fallback rates if the API fails or is offline
+    return {"USD": 0.00027, "EUR": 0.00025, "GBP": 0.00021, "KES": 0.039}
+
 @app.route('/accounts') # This matches your sidebar link
 @login_required
 def budgets():
@@ -346,10 +363,12 @@ def budgets():
         {'name': 'New Laptop', 'target': 3500000, 'current': 1200000, 'icon': 'bi-laptop'}
     ]
     
+    rates = get_live_rates()
     # 6. Render the page
     return render_template('accounts.html', 
                            total_balance=total_balance, 
                            categories=active_categories,
+                           rates=rates, # Pass the live rates here
                            savings_goals=savings_goals,
                            initials=initials)
 
