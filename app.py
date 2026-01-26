@@ -3,7 +3,11 @@ from extensions import db
 from datetime import datetime, date
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import extract
+from datetime import timedelta
 import os
+
+
 
 # Initialize the application first
 # Flask app setup
@@ -358,6 +362,40 @@ def analytics():
 @login_required
 def security():
     return render_template('security.html')
+
+# PRINT RECEIPT ROUTE
+# Generates printable expense reports based on user selection
+@app.route('/print_receipt')
+@login_required
+def print_receipt():
+    report_type = request.args.get('type')
+    period = request.args.get('period') # e.g., "2026-01-22" or "2026-01"
+    
+    query = Expense.query.filter_by(user_id=current_user.id)
+
+    if report_type == 'weekly':
+        start_date = datetime.strptime(period, '%Y-%m-%d').date()
+        end_date = start_date + timedelta(days=7)
+        expenses = query.filter(Expense.date_to_handle >= start_date, Expense.date_to_handle < end_date).all()
+        title = f"Weekly Statement ({start_date} to {end_date})"
+    
+    elif report_type == 'monthly':
+        year, month = map(int, period.split('-'))
+        expenses = query.filter(extract('month', Expense.date_to_handle) == month, 
+                                extract('year', Expense.date_to_handle) == year).all()
+        title = f"Monthly Statement ({period})"
+    
+    else: # yearly
+        expenses = query.filter(extract('year', Expense.date_to_handle) == int(period)).all()
+        title = f"Yearly Summary ({period})"
+
+    total_spent = sum(exp.amount for exp in expenses)
+    
+    return render_template('receipt_template.html', 
+                           expenses=expenses, 
+                           title=title, 
+                           total_spent=total_spent,
+                           total_balance=current_user.total_balance)
 
 # --- DATABASE INITIALIZATION ---
 
