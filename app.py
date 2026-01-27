@@ -421,7 +421,7 @@ def analytics():
 
             # 1. DEFINE THE AMOUNT HERE
             amount = abs(e.amount)
-            
+
             # Use abs() to ensure the graph trends UPWARD even if stored as negative
             cumulative_burn += abs(e.amount)
 
@@ -458,16 +458,31 @@ def analytics():
         days_left = 0
         projected_date_str = "N/A"
 
+    # 6. Savings Ratio Calculation
+    # Your "Budget" is the original total_balance you set
+    starting_budget = current_user.total_balance
+    
+    if starting_budget > 0:
+        # Savings Ratio = (Remaining Cash + Savings) / Total Starting Budget
+        # This shows what % of your original money isn't "burned" yet
+        savings_ratio = ((effective_balance + total_saved_so_far) / starting_budget) * 100
+        spend_ratio = 100 - savings_ratio
+    else:
+        savings_ratio = 0
+        spend_ratio = 0
+
     return render_template('analytics.html', 
                            initials=initials,
                            current_day=now.strftime('%A'),
                            current_date=now.strftime('%b %d, %Y'),
                            daily_data=dict(daily_data),
-                           category_data=dict(category_data), # NEW: Added this line
                            total_spent=cumulative_burn,
                            avg_burn=avg_daily_burn,
                            projected_date=projected_date_str,
                            days_left=int(days_left), # Will now show 1 Day
+                           savings_ratio=savings_ratio, 
+                           spend_ratio=spend_ratio,
+                           category_data=dict(category_data),
                            total_balance=effective_balance)
 
 # PRINT RECEIPT ROUTE
