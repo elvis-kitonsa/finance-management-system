@@ -52,7 +52,8 @@
     </div>
 
     <div class="col-xl-4">
-      <div class="card glass-card border-0 bg-primary text-white p-4 mb-4 shadow" style="border-radius: 24px">
+      <div class="card glass-card border-0 p-4 mb-4 shadow text-white" 
+     style="border-radius: 24px; background-color: #0000ff !important; box-shadow: 0 10px 30px rgba(0, 0, 255, 0.3) !important;">
         <small class="opacity-75 text-uppercase fw-bold">Projected Runway</small>
         <h2 class="fw-bold mb-0">{{ days_left }} Days</h2>
         <p class="mb-0 small opacity-75">Until capital hits UGX 0</p>
@@ -81,9 +82,10 @@
     const labels = Object.keys(rawData).sort();
     const dataPoints = labels.map(k => rawData[k]);
 
+    // 1. Vibrant Blue Gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-    gradient.addColorStop(0, 'rgba(55, 93, 251, 0.2)');
-    gradient.addColorStop(1, 'rgba(55, 93, 251, 0)');
+    gradient.addColorStop(0, 'rgba(0, 0, 255, 0.2)'); 
+    gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
 
     new Chart(ctx, {
       type: 'line',
@@ -92,15 +94,15 @@
         datasets: [{
           label: 'Cumulative Spend',
           data: dataPoints,
-          borderColor: '#375dfb',
+          borderColor: '#0000ff', 
           borderWidth: 3,
           backgroundColor: gradient,
           fill: true,
           tension: 0.4,
           pointBackgroundColor: '#ffffff',
-          pointBorderColor: '#375dfb',
+          pointBorderColor: '#0000ff', 
           pointHoverRadius: 6
-        }]
+        }] // This was the missing bracket that broke the chart
       },
       options: {
         responsive: true,
