@@ -40,6 +40,7 @@
 <main class="p-4">
   <div class="row g-4">
     <div class="col-xl-8">
+      <div class="d-flex flex-column gap-4">
       <div class="card glass-card h-100 border-0 shadow-sm">
         <div class="p-4">
           <h5 class="fw-bold">Burn Rate (Cumulative Spend)</h5>
@@ -49,6 +50,24 @@
           </div>
         </div>
       </div>
+
+      <div class="card glass-card border-0 shadow-sm">
+      <div class="p-4">
+        <h5 class="fw-bold">Spending by Category</h5>
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <div style="height: 280px; position: relative">
+              <canvas id="categoryDoughnutChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <div id="category-legend" class="d-flex flex-column gap-2">
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
     </div>
 
     <div class="col-xl-4">
@@ -158,6 +177,37 @@
         }
     }
 });
+
+// 2. Category Doughnut Chart
+    const catCtx = document.getElementById('categoryDoughnutChart').getContext('2d');
+    const catData = {{ category_data|tojson }}; // Ensure this variable is passed from your Python route [cite: 2026-01-01]
+
+    new Chart(catCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(catData),
+            datasets: [{
+                data: Object.values(catData),
+                backgroundColor: ['#0000ff', '#00d1b2', '#ff4d4f', '#ffbc7d', '#722ed1'],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%', // Sleek modern doughnut look
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a1d1f',
+                    callbacks: {
+                        label: (context) => ` UGX ${context.parsed.toLocaleString()}`
+                    }
+                }
+            }
+        }
+    });
   });
 </script>
 

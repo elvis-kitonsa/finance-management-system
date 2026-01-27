@@ -4,7 +4,7 @@ from datetime import datetime, date
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import extract
-from datetime import timedelta
+from datetime import datetime, timedelta
 from collections import defaultdict
 import requests
 import os
@@ -388,6 +388,9 @@ def analytics():
     now = datetime.utcnow()
     current_day = now.strftime('%A')
     current_date = now.strftime('%b %d, %Y')
+
+    # NEW: Initialize category_data for the doughnut chart
+    category_data = defaultdict(float)
     
     # Handle empty state to avoid division by zero
     if not expenses:
@@ -395,7 +398,8 @@ def analytics():
                                initials=initials,
                                current_day=current_day,
                                current_date=current_date,
-                               daily_data={}, 
+                               daily_data={},
+                               category_data={}, # Added here 
                                total_spent=0, 
                                avg_burn=0, 
                                projected_date="N/A", 
@@ -414,8 +418,15 @@ def analytics():
         
         # We only 'burn' money on spending, not savings allocations
         if e.category != 'Savings':
+
+            # 1. DEFINE THE AMOUNT HERE
+            amount = abs(e.amount)
+            
             # Use abs() to ensure the graph trends UPWARD even if stored as negative
             cumulative_burn += abs(e.amount)
+
+            # NEW: Group amounts by category for the doughnut chart
+            category_data[e.category] += amount
         
         # Capture the cumulative state at the end of this specific date
         daily_data[date_str] = cumulative_burn 
@@ -452,6 +463,7 @@ def analytics():
                            current_day=now.strftime('%A'),
                            current_date=now.strftime('%b %d, %Y'),
                            daily_data=dict(daily_data),
+                           category_data=dict(category_data), # NEW: Added this line
                            total_spent=cumulative_burn,
                            avg_burn=avg_daily_burn,
                            projected_date=projected_date_str,
