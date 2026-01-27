@@ -142,7 +142,7 @@
                 border: { display: true },
                 grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
                 ticks: {
-                    callback: v => 'UGX ' + (v >= 1000 ? (v/1000).toFixed(1) + 'k' : v),
+                    callback: v => 'UGX ' + (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v),
                     font: { family: 'Plus Jakarta Sans', size: 11 },
                     padding: 10
                 }
