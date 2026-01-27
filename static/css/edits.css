@@ -154,11 +154,20 @@ h2,
   color: #0f172a;
 }
 
+/* Muted Text Styling for Subheadings and Labels */
 .text-muted {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
+}
+
+/* Fix for email casing in dropdown */
+.user-email-text {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 400 !important;
+  display: block;
 }
 
 /* Center icons perfectly and keep them a consistent size */
