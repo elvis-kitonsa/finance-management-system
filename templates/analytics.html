@@ -1,0 +1,110 @@
+{% extends "base.html" %} {% block content %}
+<div class="container-fluid p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="fw-bold">Financial Analytics</h2>
+      <p class="text-muted">Predictive insights based on your spending velocity.</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-xl-8">
+      <div class="card glass-card h-100 border-0 shadow-sm">
+        <div class="p-4">
+          <h5 class="fw-bold">Burn Rate (Cumulative Spend)</h5>
+          <div style="height: 350px; position: relative">
+            <canvas id="burnRateChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4">
+      <div class="card glass-card border-0 bg-primary text-white p-4 mb-4 shadow">
+        <small class="opacity-75 text-uppercase fw-bold">Projected Runway</small>
+        <h2 class="fw-bold mb-0">{{ days_left }} Days</h2>
+        <p class="mb-0 small opacity-75">Until capital hits UGX 0</p>
+      </div>
+
+      <div class="card glass-card border-0 p-4 shadow-sm">
+        <div class="d-flex align-items-center gap-3">
+          <div class="icon-box bg-danger-subtle text-danger rounded-circle p-3">
+            <i class="bi bi-fire fs-4"></i>
+          </div>
+          <div>
+            <small class="text-muted d-block fw-bold text-uppercase">Avg. Daily Burn</small>
+            <span class="fw-bold fs-5">UGX {{ "{:,.0f}".format(avg_burn) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Ensure the DOM is fully loaded before running the script
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('burnRateChart').getContext('2d');
+
+    // 1. Data Processing
+    const rawData = {{ daily_data|tojson }};
+    const labels = Object.keys(rawData).sort(); // Fixes the zig-zag issue
+    const dataPoints = labels.map(k => rawData[k]);
+
+    // 2. Create the Premium Gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+    gradient.addColorStop(0, 'rgba(55, 93, 251, 0.2)'); // Brand Blue
+    gradient.addColorStop(1, 'rgba(55, 93, 251, 0)');
+
+    // 3. Render Chart
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Cumulative Spend',
+          data: dataPoints,
+          borderColor: '#375dfb',
+          borderWidth: 3,
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#375dfb',
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a1d1f',
+            padding: 12,
+            callbacks: {
+              label: (context) => 'Total: UGX ' + context.parsed.y.toLocaleString()
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+            ticks: {
+              callback: v => 'UGX ' + (v/1000) + 'k',
+              font: { family: 'Plus Jakarta Sans' }
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Plus Jakarta Sans' } }
+          }
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

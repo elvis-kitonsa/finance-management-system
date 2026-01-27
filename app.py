@@ -5,6 +5,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import extract
 from datetime import timedelta
+from collections import defaultdict
 import requests
 import os
 
@@ -372,15 +373,46 @@ def budgets():
                            savings_goals=savings_goals,
                            initials=initials)
 
+# ANALYTICS ROUTE
+# Displays charts and graphs pertaining to user expenses
 @app.route('/analytics')
 @login_required
 def analytics():
-    return render_template('analytics.html')
+    total_capital = 2500000 
+    
+    # Use 'date_to_handle' as defined in your models.py
+    expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date_to_handle.asc()).all()
+    
+    if not expenses:
+        return render_template('analytics.html', daily_data={}, total_spent=0, avg_burn=0, 
+                               projected_date="N/A", days_left=0, total_balance=total_capital)
 
-@app.route('/security')
-@login_required
-def security():
-    return render_template('security.html')
+    daily_data = defaultdict(float)
+    cumulative_sum = 0
+    
+    # We loop through expenses to create a cumulative "Burn" total
+    for e in expenses:
+        date_str = e.date_to_handle.strftime('%Y-%m-%d')
+        cumulative_sum += e.amount
+        daily_data[date_str] = cumulative_sum 
+
+    # Calculation Logic
+    start_date = expenses[0].date_to_handle
+    days_elapsed = (datetime.utcnow() - start_date).days or 1
+    total_spent = cumulative_sum
+    avg_daily_burn = total_spent / days_elapsed
+    
+    remaining = total_capital - total_spent
+    days_left = max(0, remaining / avg_daily_burn) if avg_daily_burn > 0 else 0
+    projected_date = datetime.utcnow() + timedelta(days=days_left)
+    
+    return render_template('analytics.html', 
+                           daily_data=dict(daily_data),
+                           total_spent=total_spent,
+                           avg_burn=avg_daily_burn,
+                           projected_date=projected_date.strftime('%d %b, %Y'),
+                           days_left=int(days_left),
+                           total_balance=total_capital)
 
 # PRINT RECEIPT ROUTE
 # Generates printable expense reports based on user selection
