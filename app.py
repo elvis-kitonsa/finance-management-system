@@ -405,8 +405,25 @@ def analytics():
     remaining = total_capital - total_spent
     days_left = max(0, remaining / avg_daily_burn) if avg_daily_burn > 0 else 0
     projected_date = datetime.utcnow() + timedelta(days=days_left)
+
+    # Initials Generation Logic
+    # 1. Generate initials (e.g., "John Doe" -> "JD")
+    names = current_user.full_name.split()
+    initials = ""
+    if len(names) >= 2:
+        initials = (names[0][0] + names[-1][0]).upper()
+    elif len(names) == 1:
+        initials = names[0][0].upper()
+
+    # 2. Get current time for the navbar
+    now = datetime.utcnow()
+    current_day = now.strftime('%A')      # e.g., "Tuesday"
+    current_date = now.strftime('%b %d, %Y') # e.g., "Jan 27, 2026"
     
     return render_template('analytics.html', 
+                           initials=initials,
+                           current_day=current_day,
+                           current_date=current_date,
                            daily_data=dict(daily_data),
                            total_spent=total_spent,
                            avg_burn=avg_daily_burn,
