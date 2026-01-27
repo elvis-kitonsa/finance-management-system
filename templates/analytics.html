@@ -37,9 +37,13 @@
   </div>
 </header>
 
+<!-- Main Analytics Content -->
 <main class="p-4">
   <div class="row g-4">
     <div class="col-xl-8">
+
+      <!-- Burn Rate Card -->
+      <!-- Displays a line chart of cumulative spend over time -->
       <div class="d-flex flex-column gap-4">
       <div class="card glass-card h-100 border-0 shadow-sm">
         <div class="p-4">
@@ -51,6 +55,8 @@
         </div>
       </div>
 
+      <!-- Spending by Category Card -->
+      <!-- Displays a doughnut chart of spending by category with a custom legend and insights -->
       <div class="card glass-card border-0 shadow-sm">
       <div class="p-4">
         <h5 class="fw-bold">Spending by Category</h5>
@@ -73,6 +79,8 @@
     <div class="p-3 rounded-3" style="background-color: #f8f9fc; border: 1px dashed #e3e6f0;">
         <p class="text-uppercase text-muted small fw-black mb-2">Quick Insight</p>
         
+        <!-- Identify the category with the highest spend
+             and display it as the Primary Drain -->
         {% set top_cat = category_data.items()|sort(attribute='1', reverse=true)|first %}
         {% if top_cat %}
         <div class="mb-2">
@@ -93,7 +101,11 @@
     </div>
     </div>
 
+    <!-- Summary Cards Column -->
     <div class="col-xl-4">
+
+      <!-- Projected Runway Card -->
+      <!-- Shows days left until capital hits zero -->
       <div class="card glass-card border-0 p-4 mb-4 shadow text-white" 
         data-bs-toggle="modal" 
         data-bs-target="#runwayInfoModal"
@@ -106,6 +118,8 @@
         <p class="mb-0 small text-white">Until capital hits UGX 0</p>
       </div>
 
+      <!-- Average Daily Burn Card -->
+      <!-- Shows average daily spending with info modal -->
       <div class="card glass-card border-0 p-4 shadow-sm" style="border-radius: 24px">
         <div class="d-flex align-items-center gap-3">
           <div class="icon-box bg-danger-subtle text-danger rounded-circle p-3" data-bs-toggle="modal" data-bs-target="#burnRateInfoModal" style="cursor: pointer">
@@ -117,6 +131,40 @@
           </div>
         </div>
       </div>
+
+      <div class="card glass-card border-0 p-4 shadow-sm mt-4" style="border-radius: 24px">
+    <div class="d-flex align-items-center gap-3">
+        <div class="icon-box bg-success-subtle text-success rounded-circle p-3">
+            <i class="bi bi-graph-down-arrow fs-4"></i>
+        </div>
+
+        <!-- Spending Efficiency Insight -->
+        <!-- Displays efficiency based on spend ratio -->
+        <div>
+            <small class="text-muted d-block fw-bold text-uppercase">Spending Efficiency</small>
+            <span class="fw-bold fs-5">
+                {% if spend_ratio < 50 %}
+                    Optimized
+                {% elif spend_ratio < 85 %}
+                    Moderate
+                {% else %}
+                    Critical
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="mt-3">
+        <div class="d-flex justify-content-between mb-1">
+            <small class="text-muted">Budget Utilization</small>
+            <small class="fw-bold">{{ spend_ratio|round(1) }}%</small>
+        </div>
+        <div class="progress" style="height: 6px;">
+            <div class="progress-bar {% if spend_ratio > 85 %}bg-danger{% else %}bg-primary{% endif %}" 
+                 role="progressbar" 
+                 style="width: {{ spend_ratio }}%"></div>
+        </div>
+    </div>
+</div>
     </div>
   </div>
 </main>
