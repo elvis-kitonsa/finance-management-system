@@ -378,58 +378,79 @@ def budgets():
 @app.route('/analytics')
 @login_required
 def analytics():
-    total_capital = 2500000 
-    
-    # Use 'date_to_handle' as defined in your models.py
+    # 1. Fetch user expenses
     expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date_to_handle.asc()).all()
     
-    if not expenses:
-        return render_template('analytics.html', daily_data={}, total_spent=0, avg_burn=0, 
-                               projected_date="N/A", days_left=0, total_balance=total_capital)
-
-    daily_data = defaultdict(float)
-    cumulative_sum = 0
+    # 2. UI Helpers for Navbar & Date Display
+    name_parts = current_user.full_name.split()
+    initials = "".join([part[0].upper() for part in name_parts[:2]])
     
-    # We loop through expenses to create a cumulative "Burn" total
-    for e in expenses:
-        date_str = e.date_to_handle.strftime('%Y-%m-%d')
-        cumulative_sum += e.amount
-        daily_data[date_str] = cumulative_sum 
-
-    # Calculation Logic
-    start_date = expenses[0].date_to_handle
-    days_elapsed = (datetime.utcnow() - start_date).days or 1
-    total_spent = cumulative_sum
-    avg_daily_burn = total_spent / days_elapsed
-    
-    remaining = total_capital - total_spent
-    days_left = max(0, remaining / avg_daily_burn) if avg_daily_burn > 0 else 0
-    projected_date = datetime.utcnow() + timedelta(days=days_left)
-
-    # Initials Generation Logic
-    # 1. Generate initials (e.g., "John Doe" -> "JD")
-    names = current_user.full_name.split()
-    initials = ""
-    if len(names) >= 2:
-        initials = (names[0][0] + names[-1][0]).upper()
-    elif len(names) == 1:
-        initials = names[0][0].upper()
-
-    # 2. Get current time for the navbar
     now = datetime.utcnow()
-    current_day = now.strftime('%A')      # e.g., "Tuesday"
-    current_date = now.strftime('%b %d, %Y') # e.g., "Jan 27, 2026"
+    current_day = now.strftime('%A')
+    current_date = now.strftime('%b %d, %Y')
     
+    # Handle empty state to avoid division by zero
+    if not expenses:
+        return render_template('analytics.html', 
+                               initials=initials,
+                               current_day=current_day,
+                               current_date=current_date,
+                               daily_data={}, 
+                               total_spent=0, 
+                               avg_burn=0, 
+                               projected_date="N/A", 
+                               days_left=0, 
+                               total_balance=current_user.total_balance)
+
+    # 3. Process Transactions for the Cumulative Burn Graph
+    daily_data = defaultdict(float)
+    cumulative_burn = 0
+    
+    # We sort explicitly to ensure the line graph moves forward in time
+    sorted_expenses = sorted(expenses, key=lambda x: x.date_to_handle)
+
+    for e in sorted_expenses:
+        date_str = e.date_to_handle.strftime('%Y-%m-%d')
+        
+        # Logic: If it's NOT a savings deposit, it's a 'Burn' (Spending)
+        if e.category != 'Savings':
+            # Use abs() to ensure the graph trends UPWARD even if stored as negative
+            cumulative_burn += abs(e.amount)
+        
+        # Capture the cumulative state at the end of this specific date
+        daily_data[date_str] = cumulative_burn 
+
+    # 4. Burn Rate & Runway Calculations
+    # Calculate days since the very first expense record
+    start_date = sorted_expenses[0].date_to_handle.date()
+    today = datetime.utcnow().date()
+    days_elapsed = (today - start_date).days + 1 # +1 to avoid division by zero on day one
+    
+    # Avg Daily Burn = Total Outflow / Days Active
+    avg_daily_burn = cumulative_burn / days_elapsed
+    
+    # Current Wallet Balance (This is your UGX 0.00 cash on hand)
+    current_wallet_balance = current_user.total_balance
+    
+    # Runway Calculation: How many days until balance hits 0
+    if avg_daily_burn > 0:
+        days_left = max(0, current_wallet_balance / avg_daily_burn)
+        projected_date_obj = datetime.utcnow() + timedelta(days=days_left)
+        projected_date_str = projected_date_obj.strftime('%d %b, %Y')
+    else:
+        days_left = 0
+        projected_date_str = "N/A"
+
     return render_template('analytics.html', 
                            initials=initials,
                            current_day=current_day,
                            current_date=current_date,
-                           daily_data=dict(daily_data),
-                           total_spent=total_spent,
+                           daily_data=dict(daily_data), # Convert back to regular dict for JS
+                           total_spent=cumulative_burn,
                            avg_burn=avg_daily_burn,
-                           projected_date=projected_date.strftime('%d %b, %Y'),
+                           projected_date=projected_date_str,
                            days_left=int(days_left),
-                           total_balance=total_capital)
+                           total_balance=current_wallet_balance)
 
 # PRINT RECEIPT ROUTE
 # Generates printable expense reports based on user selection
