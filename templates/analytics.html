@@ -547,7 +547,7 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
     <div class="row align-items-center g-0 text-center">
         <div class="col">
             <span class="d-block small text-muted">Balance</span>
-            <span class="fw-bold text-dark">UGX {{ "{:,.0f}".format(total_budget) }}</span>
+            <span class="fw-bold text-primary">UGX {{ "{:,.0f}".format(total_budget) }}</span>
         </div>
         <div class="col-auto">
             <i class="bi bi-divide text-muted fs-4"></i>
@@ -557,7 +557,7 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
             <span class="fw-bold text-dark">{{ days_remaining }} Days</span>
         </div>
         <div class="col-auto">
-            <i class="bi bi-pause-fill rotate-90 text-muted fs-4" style="transform: rotate(90deg);"></i>
+            <div class="text-primary fw-bold fs-4 mx-3">=</div>
         </div>
         <div class="col">
             <span class="d-block small text-muted">Daily Limit</span>
