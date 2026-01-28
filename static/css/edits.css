@@ -373,7 +373,7 @@ Note: Applied specifically to the "Add Expense" button in the expense modal
 }
 
 /* Styling applied to the pop-up Avg. Daily Burn card button (Got it! Thanks) in the Analytics page
-   to make it purple in color and hoverable with a darker shade */
+   to make it light pink in color and hoverable with a darker shade */
 button.btn-got-it {
   background-color: #800080 !important;
   border: none !important;
@@ -387,4 +387,27 @@ button.btn-got-it:hover {
   background-color: #5d005d !important;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Styling applied to the pop-up Daily Safe Zone card button (Got it!) in the Analytics page
+   to make it light purple in color and hoverable with a darker shade */
+/* High-specificity selector to ensure it overrides everything */
+button.btn-analytics-insight {
+  background: linear-gradient(135deg, #3d52b1 0%, #6d4297 100%) !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  cursor: pointer;
+}
+
+button.btn-analytics-insight:hover {
+  background: linear-gradient(135deg, #2d3e8a 0%, #523172 100%) !important;
+  transform: translateY(-3px); /* Subtle lift */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+  filter: brightness(1.1); /* Slight glow effect */
+}
+
+button.btn-analytics-insight:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2) !important;
 }
