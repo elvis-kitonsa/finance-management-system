@@ -502,7 +502,7 @@ def analytics():
                            total_budget=current_user.total_balance, # stays fixed at the set amount - 2.5M
                            total_remaining=effective_balance) # actual balance with some expenses added
 
-# PRINT RECEIPT ROUTE
+# PRINT RECEIPT ROUTE - Used in the accounts.html section
 # Generates printable expense reports based on user selection
 @app.route('/print_receipt')
 @login_required
@@ -535,6 +535,61 @@ def print_receipt():
                            title=title, 
                            total_spent=total_spent,
                            total_balance=current_user.total_balance)
+
+# USER PROFILE ROUTE
+# Displays the user's profile page with editable and non-editable fields
+@app.route('/profile')
+@login_required
+def profile():
+    user = current_user
+    now = datetime.now() 
+
+    # 1. Initials Logic (Safe check for KE initials)
+    # This keeps your top-right avatar style consistent
+    names = user.full_name.split() if user.full_name else []
+    initials = "".join([n[0].upper() for n in names[:2]]) if names else "??"
+
+    # 2. Safe Data Fetching
+    # We use 'getattr' to provide a fallback value if the column is missing in DB
+    total_budget = getattr(user, 'total_budget', 2500000) 
+    
+    # Check if 'created_at' exists, otherwise use a default string
+    if hasattr(user, 'created_at') and user.created_at:
+        date_joined = user.created_at.strftime("%B %d, %Y")
+    else:
+        date_joined = "January 2026"
+
+    # 3. DOB Fetching (Safe)
+    dob_value = getattr(user, 'dob', 'Not Provided')
+
+    return render_template('profile.html', 
+                           full_name=user.full_name,
+                           username=user.username,
+                           email=user.email,
+                           dob=getattr(user, 'dob', '2000-08-10'),
+                           date_joined=date_joined,
+                           total_budget=total_budget,
+                           user_initials=initials,
+                           day_name=now.strftime("%A"),
+                           current_date=now.strftime("%b %d, %Y"))
+
+# UPDATE PROFILE ROUTE
+# When accessed, this route will display a form to update the user's profile
+# The form will be pre-filled with the current user's information
+@app.route('/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    user = current_user
+    
+    # Update only the allowed fields
+    user.username = request.form.get('username')
+    user.email = request.form.get('email')
+    
+    # Commit changes to the database
+    db.session.commit()
+    
+    flash("Profile updated successfully!", "success")
+    return redirect(url_for('profile'))
 
 # --- DATABASE INITIALIZATION ---
 
