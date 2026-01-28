@@ -452,12 +452,15 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
           <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.65rem">The Formula</small>
           <p class="mb-2">Remaining Cash ÷ Daily Burn Rate</p>
           <div class="d-flex justify-content-between align-items-center bg-white p-2 rounded border shadow-sm">
-            <span class="small">UGX {{ "{:,.0f}".format(total_budget) }}</span>
+            <span class="small">UGX {{ "{:,.0f}".format(total_remaining) }}</span>
             <span class="text-muted">÷</span>
             <span class="small">UGX {{ "{:,.0f}".format(avg_burn) }}</span>
             <span class="fw-bold text-primary">= {{ days_left }} Days</span>
           </div>
         </div>
+<p class="small text-muted">
+  Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_remaining) }}</strong> will last approximately <strong>{{ days_left }}</strong> more days.
+</p>
         <p class="small text-muted">
           Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_budget) }}</strong> will last approximately <strong>{{ days_left }}</strong> more days.
         </p>

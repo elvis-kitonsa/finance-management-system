@@ -465,7 +465,7 @@ def analytics():
     # 5. Calculate Real Runway
     # 625,000 / 491,667 = ~1.27 Days
     if avg_daily_burn > 0:
-        days_left = max(0, effective_balance / avg_daily_burn)
+        days_left = round(effective_balance / avg_daily_burn) # Use 'effective_balance' because that's what you defined
         projected_date = now + timedelta(days=days_left)
         projected_date_str = projected_date.strftime('%d %b, %Y')
     else:
