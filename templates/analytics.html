@@ -450,14 +450,14 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
           <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.65rem">The Formula</small>
           <p class="mb-2">Remaining Cash ÷ Daily Burn Rate</p>
           <div class="d-flex justify-content-between align-items-center bg-white p-2 rounded border shadow-sm">
-            <span class="small">UGX {{ "{:,.0f}".format(total_balance) }}</span>
+            <span class="small">UGX {{ "{:,.0f}".format(total_budget) }}</span>
             <span class="text-muted">÷</span>
             <span class="small">UGX {{ "{:,.0f}".format(avg_burn) }}</span>
             <span class="fw-bold text-primary">= {{ days_left }} Days</span>
           </div>
         </div>
         <p class="small text-muted">
-          Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_balance) }}</strong> will last approximately <strong>{{ days_left }}</strong> more days.
+          Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_budget) }}</strong> will last approximately <strong>{{ days_left }}</strong> more days.
         </p>
       </div>
       <div class="modal-footer border-0 p-4 pt-0">
@@ -503,7 +503,7 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
                     <div class="col-6">
                         <div class="p-2 border rounded-3 text-center">
                             <small class="text-muted d-block">Remaining</small>
-                            <span class="fw-bold text-success">UGX {{ "{:,.0f}".format(total_balance) }}</span>
+                            <span class="fw-bold text-success">UGX {{ "{:,.0f}".format(total_budget) }}</span>
                         </div>
                     </div>
                 </div>
@@ -542,7 +542,7 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
     <div class="row align-items-center g-0 text-center">
         <div class="col">
             <span class="d-block small text-muted">Balance</span>
-            <span class="fw-bold text-dark">UGX {{ "{:,.0f}".format(total_balance) }}</span>
+            <span class="fw-bold text-dark">UGX {{ "{:,.0f}".format(total_budget) }}</span>
         </div>
         <div class="col-auto">
             <i class="bi bi-divide text-muted fs-4"></i>
@@ -614,7 +614,7 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
                 <h6 class="fw-bold mb-1">Runway Extension</h6>
                 {# Calculate 80% of current daily burn to show a 'Saving' scenario #}
                 {% set target_burn = (avg_burn * 0.8) %}
-                {% set extended_days = (total_balance / target_burn)|round(0, 'floor') if target_burn > 0 else 0 %}
+                {% set extended_days = (total_budget / target_burn)|round(0, 'floor') if target_burn > 0 else 0 %}
                 <p class="small text-muted mb-0">
                     By reducing daily spend to <strong>UGX {{ "{:,.0f}".format(target_burn) }}</strong>, you can extend your runway from {{ days_left }} days to <strong>{{ extended_days|int }} days</strong>.
                 </p>

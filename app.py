@@ -132,11 +132,16 @@ def index():
 @login_required 
 def dashboard():
     all_expenses = Expense.query.filter_by(user_id=current_user.id).order_by(Expense.date_to_handle.desc()).all()
-    total_balance = current_user.total_balance
     
+    # This is your fixed budget that you set yourself
+    budget_ceiling = current_user.total_balance
+    
+    # Calculate what has actually been spent
     total_spent = sum(exp.amount for exp in all_expenses if exp.category != 'Savings')
     amount_saved = sum(exp.amount for exp in all_expenses if exp.category == 'Savings')
-    total_remaining = total_balance - (total_spent + amount_saved)
+
+    # FIX: The "Remaining" is the Budget minus what is gone
+    total_remaining = budget_ceiling - (total_spent + amount_saved)
 
     # --- NEW INITIALS LOGIC ---
     # This takes "Mubiru Stuart" and turns it into "MS"
@@ -146,7 +151,7 @@ def dashboard():
 
     return render_template('dashboard.html', 
                            expenses=all_expenses, 
-                           total_balance=total_balance,
+                           total_balance=budget_ceiling, # This stays fixed at the amount you set
                            total_spent=total_spent,
                            total_remaining=total_remaining,
                            total_saved=amount_saved,
@@ -231,19 +236,15 @@ def delete_expense(expense_id):
         return jsonify({"status": "error", "message": "Unauthorized"}), 403
 
     try:
-        # NEW: If the expense was "covered/paid", add the money back to the balance
-        if expense.is_covered:
-            current_user.total_balance += expense.amount
-            
+        # We want the budget to stay exactly what the user set it to initially.    
         db.session.delete(expense)
         db.session.commit()
+
+        # Return the original, unchanged balance
         return jsonify({"status": "success", "new_balance": current_user.total_balance}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
-
-# Update description with new content set in the Transaction Receipt card
-# This is the card that pops up when you click on an already registered expense in the dashboard list
 
 # 4. Update Expense Description Route
 # Updates the title/description of an existing expense
@@ -498,7 +499,8 @@ def analytics():
                            days_remaining=days_remaining, # For daily limit display (Used to indicate how many days are left in the month)
                            daily_limit=daily_limit,
                            category_data=dict(category_data),
-                           total_balance=effective_balance)
+                           total_budget=current_user.total_balance, # stays fixed at the set amount - 2.5M
+                           total_remaining=effective_balance) # actual balance with some expenses added
 
 # PRINT RECEIPT ROUTE
 # Generates printable expense reports based on user selection
