@@ -1,69 +1,71 @@
 {% extends "base.html" %} {% block content %}
-<div class="d-flex" id="wrapper">
-  <div class="bg-dark border-end" id="sidebar-wrapper" style="min-height: 100vh; width: 250px">
-    <div class="sidebar-heading text-white p-4 fw-bold fs-4">FMS</div>
-    <div class="list-group list-group-flush">
-      <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action bg-primary text-white p-3 border-0 rounded-3 mb-2"> <i class="bi bi-house-door me-2"></i> Overview </a>
-      <a href="#" class="list-group-item list-group-item-action bg-dark text-muted p-3 border-0"> <i class="bi bi-wallet2 me-2"></i> Accounts </a>
-      <a href="{{ url_for('analytics') }}" class="list-group-item list-group-item-action bg-dark text-muted p-3 border-0"> <i class="bi bi-graph-up me-2"></i> Analytics </a>
+<div class="min-vh-100 bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-4 border-bottom shadow-sm">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center">
+        <a href="{{ url_for('dashboard') }}" class="text-decoration-none fw-bold fs-4 text-dark me-4">FMS</a>
+        <h4 class="fw-bold mb-0 text-muted fs-6">Profile Settings</h4>
+      </div>
+      <div class="ms-auto d-flex align-items-center">
+        <span class="text-muted me-3 small fw-bold text-uppercase">{{ day_name }}, {{ current_date }}</span>
+        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px">{{ user_initials }}</div>
+      </div>
     </div>
-  </div>
+  </nav>
 
-  <div id="page-content-wrapper" class="w-100 bg-light">
-    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-4 border-bottom shadow-sm">
-      <div class="container-fluid">
-        <h4 class="fw-bold mb-0">FinanceFlow | Profile</h4>
-        <div class="ms-auto d-flex align-items-center">
-          <span class="text-muted me-3 small fw-bold text-uppercase">{{ day_name }}, {{ current_date }}</span>
-          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px">{{ user_initials }}</div>
+  <div class="container py-5" style="max-width: 900px">
+    <div class="text-center mb-5">
+      <div class="mx-auto mb-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-lg" style="width: 100px; height: 100px; font-size: 2.5rem">{{ user_initials }}</div>
+      <h2 class="fw-bold mb-1">{{ full_name }}</h2>
+      <p class="text-muted">Member since {{ date_joined.upper() }}</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <h5 class="fw-bold mb-4 text-primary">Official Identity</h5>
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">FULL NAME</label>
+            <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-medium" value="{{ full_name }}" readonly />
+            <small class="text-muted" style="font-size: 0.7rem">Legal names cannot be changed in-app.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">DATE OF BIRTH</label>
+            <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-medium" value="{{ dob }}" readonly />
+          </div>
+          <div>
+            <label class="form-label text-muted small fw-bold">PRIMARY BUDGET</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-0 fw-bold text-primary">UGX</span>
+              <input type="text" class="form-control bg-light border-0 py-3 rounded-end-3 fw-bold text-primary" value="{{ '{:,.0f}'.format(total_budget) }}" readonly />
+            </div>
+          </div>
         </div>
       </div>
-    </nav>
 
-    <div class="container-fluid p-4">
-      <div class="row g-4">
-        <div class="col-12">
-          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center">
-            <div class="mx-auto mb-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow" style="width: 80px; height: 80px; font-size: 2rem">{{ user_initials }}</div>
-            <h3 class="fw-bold mb-0">{{ full_name }}</h3>
-            <p class="text-muted small">MEMBER SINCE {{ date_joined.upper() }}</p>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-            <h5 class="fw-bold mb-4 text-primary">Official Identity</h5>
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+          <h5 class="fw-bold mb-4 text-primary">Account Settings</h5>
+          <form action="{{ url_for('update_profile') }}" method="POST">
             <div class="mb-3">
-              <label class="form-label text-muted small fw-bold">FULL NAME</label>
-              <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-medium" value="{{ full_name }}" readonly />
+              <label class="form-label text-muted small fw-bold">USERNAME</label>
+              <input type="text" name="username" class="form-control border-1 py-3 rounded-3" value="{{ username }}" />
             </div>
-            <div class="mb-3">
-              <label class="form-label text-muted small fw-bold">DATE OF BIRTH</label>
-              <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-medium" value="{{ dob }}" readonly />
+            <div class="mb-4">
+              <label class="form-label text-muted small fw-bold">EMAIL ADDRESS</label>
+              <input type="email" name="email" class="form-control border-1 py-3 rounded-3" value="{{ email }}" />
             </div>
-            <div>
-              <label class="form-label text-muted small fw-bold">PRIMARY BUDGET</label>
-              <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-bold text-primary" value="UGX {{ '{:,.0f}'.format(total_budget) }}" readonly />
-            </div>
-          </div>
+            <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-sm">Save Changes</button>
+          </form>
         </div>
+      </div>
+    </div>
 
-        <div class="col-md-6">
-          <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-            <h5 class="fw-bold mb-4 text-primary">Account Settings</h5>
-            <form action="{{ url_for('update_profile') }}" method="POST">
-              <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">USERNAME</label>
-                <input type="text" name="username" class="form-control border-1 py-3 rounded-3" value="{{ username }}" />
-              </div>
-              <div class="mb-4">
-                <label class="form-label text-muted small fw-bold">EMAIL ADDRESS</label>
-                <input type="email" name="email" class="form-control border-1 py-3 rounded-3" value="{{ email }}" />
-              </div>
-              <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-sm btn-analytics-insight">Save Changes</button>
-            </form>
-          </div>
-        </div>
+    <div class="mt-5 pt-4 border-top">
+      <h6 class="text-danger fw-bold mb-3">Security & Privacy</h6>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary px-4 rounded-3">Reset Password</button>
+        <button class="btn btn-outline-danger px-4 rounded-3">Delete Account</button>
       </div>
     </div>
   </div>
