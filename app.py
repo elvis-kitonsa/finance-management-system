@@ -1,3 +1,6 @@
+import requests
+import calendar
+
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
 from extensions import db 
 from datetime import datetime, date
@@ -6,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import extract
 from datetime import datetime, timedelta
 from collections import defaultdict
-import requests
+
 
 
 
@@ -418,13 +421,19 @@ def analytics():
                                initials=initials,
                                current_day=current_day,
                                current_date=current_date,
+                               expenses=[], # Keep as empty list
                                daily_data={},
-                               category_data={}, # Added here 
+                               category_data={'No Data': 0}, # Add a placeholder 
                                total_spent=0, 
                                avg_burn=0, 
                                projected_date="N/A", 
                                days_left=0, 
-                               total_balance=current_user.total_balance)
+                               savings_ratio=100, # Added: 100% of budget is "saved" if nothing is spent
+                               spend_ratio=0,     # Added: 0% spent
+                               days_remaining=max(1, calendar.monthrange(now.year, now.month)[1] - now.day),
+                               daily_limit=current_user.total_balance / max(1, calendar.monthrange(now.year, now.month)[1] - now.day),
+                               total_budget=current_user.total_balance,
+                               total_remaining=current_user.total_balance)
 
     # 3. Process Transactions for the Cumulative Burn Graph
     daily_data = defaultdict(float)
@@ -467,7 +476,6 @@ def analytics():
     effective_balance = current_user.total_balance - (total_spent_so_far + total_saved_so_far)
 
     # --- ADD THIS NEW LOGIC HERE ---
-    import calendar
     days_in_month = calendar.monthrange(now.year, now.month)[1]
     days_remaining = max(1, days_in_month - now.day) 
     daily_limit = effective_balance / days_remaining
