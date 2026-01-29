@@ -387,14 +387,25 @@ def budgets():
         {'name': 'New Laptop', 'target': 3500000, 'current': 1200000, 'icon': 'bi-laptop'}
     ]
     
-    rates = get_live_rates()
+    # Optimization: Don't call get_live_rates() here!
+    # Instead, we pass an empty dict and let the HTML use its 'manualRates' 
+    # as a fallback immediately.
+    rates = {}
+
     # 6. Render the page
     return render_template('accounts.html', 
                            total_balance=total_balance, 
                            categories=active_categories,
-                           rates=rates, # Pass the live rates here
+                           rates=rates, # This is now empty / instant
                            savings_goals=savings_goals,
                            initials=initials)
+
+# LIVE RATES ROUTE - HANDLES API CALL
+@app.route('/api/live-rates')
+@login_required
+def api_live_rates():
+    # This route only handles the API call
+    return jsonify(get_live_rates())
 
 # ANALYTICS ROUTE
 # Displays charts and graphs pertaining to user expenses

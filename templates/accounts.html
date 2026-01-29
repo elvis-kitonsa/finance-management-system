@@ -346,8 +346,14 @@
   // INITIALIZE EVERYTHING ON LOAD
   window.addEventListener("DOMContentLoaded", () => {
     updateDateTime();
-    convertLive();
-    setInterval(updateDateTime, 60000);
+    // Background fetch: Page is already visible, so the user doesn't feel the wait!
+    fetch("/api/live-rates")
+      .then((res) => res.json())
+      .then((liveData) => {
+        // Update the rates and recalculate display
+        Object.assign(allRates, liveData);
+        convertLive();
+      });
   });
 </script>
 {% endblock %}
