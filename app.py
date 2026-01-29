@@ -580,15 +580,31 @@ def profile():
 @login_required
 def update_profile():
     user = current_user
+    new_username = request.form.get('username')
+    new_email = request.form.get('email')
     
-    # Update only the allowed fields
-    user.username = request.form.get('username')
-    user.email = request.form.get('email')
+    # 1. Validation for empty fields
+    if not new_username or not new_email:
+        flash("Username and Email cannot be empty.", "danger")
+        return redirect(url_for('profile'))
+        
+    # 2. Check if the data is actually different from what is already saved
+    if new_username == user.username and new_email == user.email:
+        flash("No changes were made.", "info")
+        return redirect(url_for('profile'))
     
-    # Commit changes to the database
-    db.session.commit()
+    # 3. Apply changes only if they are new
+    user.username = new_username
+    user.email = new_email
     
-    flash("Profile updated successfully!", "success")
+    # 4. Commit with Error Handling
+    try:
+        db.session.commit()
+        flash("Profile updated successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error: Username or email is already in use by another account.", "danger")
+    
     return redirect(url_for('profile'))
 
 # --- DATABASE INITIALIZATION ---
