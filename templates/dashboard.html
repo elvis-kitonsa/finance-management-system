@@ -59,14 +59,17 @@
         </div>
 
         <div class="col ps-lg-4">
-          <h3 class="fw-bold text-white mb-2">Maximize your FinanceFlow</h3>
+          <h3 class="fw-bold text-white mb-2">Maximize your Financial Growth</h3>
           <p class="text-white text-opacity-90 mb-4" style="max-width: 500px; font-size: 1rem">Your budget is synced to a <strong>monthly cycle</strong>. We've automated your limits to keep your capital healthy until the 1st.</p>
 
-          <div class="d-flex flex-wrap align-items-center gap-3">
-            <button onclick="handleWelcomeDismiss()" class="btn btn-white fw-bold px-4 py-2 rounded-pill shadow-sm">Explore Dashboard</button>
-            <div class="form-check form-switch bg-white bg-opacity-10 px-3 py-2 rounded-pill d-inline-flex align-items-center border border-white border-opacity-25">
-              <input class="form-check-input ms-0 me-2" type="checkbox" id="dontShowAgain" style="cursor: pointer" />
-              <label class="form-check-label text-white small" for="dontShowAgain" style="cursor: pointer">Don't show again</label>
+          <div class="d-flex flex-wrap align-items-center gap-3" style="z-index: 5; position: relative">
+            <button onclick="handleWelcomeDismiss()" class="btn btn-white-action fw-bold px-4 py-2 rounded-pill shadow-sm hover-lift">Explore Dashboard</button>
+
+            <div class="glass-switch-wrapper hover-lift">
+              <div class="form-check form-switch d-flex align-items-center mb-0">
+                <input class="form-check-input custom-white-switch" type="checkbox" id="dontShowAgain" style="cursor: pointer" />
+                <label class="form-check-label text-white small fw-medium ms-2 mb-0" for="dontShowAgain" style="cursor: pointer"> Don't show again </label>
+              </div>
             </div>
           </div>
         </div>
