@@ -143,6 +143,39 @@
   a:hover .tracking-wider {
     color: var(--fms-blue) !important;
   }
+
+  .btn-clear {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #adb5bd;
+    cursor: pointer;
+    opacity: 0; /* Hidden by default */
+    transition: all 0.2s ease;
+    z-index: 5;
+  }
+
+  .btn-clear:hover {
+    background: #f8d7da;
+    color: #dc3545;
+    border-color: #f5c2c7;
+  }
+
+  /* Show the button when the input is focused or has text */
+  .fms-input-box:focus-within .btn-clear,
+  .fms-input-box:hover .btn-clear {
+    opacity: 1;
+  }
 </style>
 
 <div class="profile-viewport">
@@ -196,9 +229,15 @@
           </div>
         </div>
 
-        <div class="fms-input-box">
+        <!-- Username entry textbox with a clear button to support quick erasure -->
+        <div class="fms-input-box position-relative">
           <label>Username</label>
-          <input type="text" name="username" value="{{ username }}" />
+          <div class="d-flex align-items-center">
+            <input type="text" name="username" id="usernameInput" class="fms-value" value="{{ username }}" />
+            <button type="button" id="clearUsername" class="btn-clear shadow-sm">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
         </div>
 
         <div class="fms-input-box mb-4">
@@ -224,4 +263,17 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Javascript logic to support quick textual erasure in the Username textbox - Field Editing
+  document.addEventListener("DOMContentLoaded", function () {
+    const usernameInput = document.getElementById("usernameInput");
+    const clearBtn = document.getElementById("clearUsername");
+
+    clearBtn.addEventListener("click", function () {
+      usernameInput.value = ""; // Erase content
+      usernameInput.focus(); // Keep focus for typing
+    });
+  });
+</script>
 {% endblock %}
