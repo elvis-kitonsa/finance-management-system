@@ -182,6 +182,7 @@
     <div class="auth-container">{% block auth_content %}{% endblock %}</div>
     {% else %}
     <div class="d-flex">
+      {% if request.endpoint != 'profile' %}
       <nav id="sidebar">
         <div class="p-4 d-flex align-items-center justify-content-between">
           <h4 class="text-white fw-bold mb-0 sidebar-brand-text">F<span style="color: var(--fms-blue)">M</span>S</h4>
@@ -196,8 +197,9 @@
           <a href="{{ url_for('analytics') }}" class="nav-link {{ 'active' if request.endpoint == 'analytics' }}"> <i class="bi-graph-up-arrow fs-5 me-3"></i><span>Analytics</span> </a>
         </div>
       </nav>
+      {% endif %}
 
-      <main id="main-wrapper">{% block content %}{% endblock %}</main>
+      <main id="main-wrapper" {% if request.endpoint == 'profile' %} style="margin-left: 0; width: 100%" {% endif %}>{% block content %}{% endblock %}</main>
     </div>
     {% endif %} {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
     <div class="alert alert-{{ category }} position-fixed top-0 end-0 m-4 shadow-lg" style="z-index: 9999; border-radius: 15px">{{ message }}</div>

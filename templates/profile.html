@@ -1,71 +1,191 @@
 {% extends "base.html" %} {% block content %}
-<div class="min-vh-100 bg-light">
-  <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 px-4 border-bottom shadow-sm">
-    <div class="container-fluid">
-      <div class="d-flex align-items-center">
-        <a href="{{ url_for('dashboard') }}" class="text-decoration-none fw-bold fs-4 text-dark me-4">FMS</a>
-        <h4 class="fw-bold mb-0 text-muted fs-6">Profile Settings</h4>
+<style>
+  :root {
+    --fms-blue: #0000ff;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Main Container with subtle gradient to tie it all together */
+  .profile-viewport {
+    background: linear-gradient(135deg, #f4f7fe 0%, #eef2ff 100%);
+    min-height: 100vh;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .elite-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 255, 0.08);
+    overflow: hidden;
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    min-height: 650px;
+  }
+
+  /* Left Side: Branding & Identity */
+  .profile-sidebar {
+    background: var(--fms-blue);
+    width: 38%;
+    padding: 50px 40px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .sidebar-circle-deco {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+
+  .profile-avatar-elite {
+    width: 120px;
+    height: 120px;
+    background: white;
+    color: var(--fms-blue);
+    border-radius: 35px; /* Modern squircles look more premium */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    font-weight: 800;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    margin-bottom: 25px;
+  }
+
+  /* Right Side: Interactive Forms */
+  .profile-main-content {
+    flex: 1;
+    padding: 50px;
+    background: white;
+  }
+
+  .fms-input-box {
+    background: #f8faff;
+    border: 2px solid #f0f3ff;
+    border-radius: 18px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .fms-input-box:focus-within {
+    border-color: var(--fms-blue);
+    background: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 255, 0.05);
+  }
+
+  .fms-input-box label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .fms-input-box input,
+  .fms-input-box p {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-weight: 700;
+    color: #1a1d1f;
+    padding: 0;
+    margin: 0;
+    outline: none;
+  }
+
+  .stat-pill {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+</style>
+
+<div class="profile-viewport">
+  <div class="elite-card">
+    <div class="profile-sidebar">
+      <div class="sidebar-circle-deco"></div>
+
+      <div>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-light rounded-circle p-2 mb-5 shadow-sm">
+          <i class="bi bi-arrow-left text-primary fs-4"></i>
+        </a>
+        <div class="profile-avatar-elite">{{ user_initials }}</div>
+        <h2 class="fw-extrabold mb-1">{{ full_name }}</h2>
+        <p class="opacity-75 small fw-bold">Verified Member Since {{ date_joined }}</p>
       </div>
-      <div class="ms-auto d-flex align-items-center">
-        <span class="text-muted me-3 small fw-bold text-uppercase">{{ day_name }}, {{ current_date }}</span>
-        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px">{{ user_initials }}</div>
+
+      <div class="stat-pill">
+        <span class="d-block small opacity-75 fw-bold text-uppercase mb-1">Active Budget</span>
+        <h3 class="fw-bold mb-0">UGX {{ '{:,.0f}'.format(total_budget) }}</h3>
       </div>
     </div>
-  </nav>
 
-  <div class="container py-5" style="max-width: 900px">
-    <div class="text-center mb-5">
-      <div class="mx-auto mb-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-lg" style="width: 100px; height: 100px; font-size: 2.5rem">{{ user_initials }}</div>
-      <h2 class="fw-bold mb-1">{{ full_name }}</h2>
-      <p class="text-muted">Member since {{ date_joined.upper() }}</p>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-          <h5 class="fw-bold mb-4 text-primary">Official Identity</h5>
-          <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">FULL NAME</label>
-            <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-medium" value="{{ full_name }}" readonly />
-            <small class="text-muted" style="font-size: 0.7rem">Legal names cannot be changed in-app.</small>
-          </div>
-          <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">DATE OF BIRTH</label>
-            <input type="text" class="form-control bg-light border-0 py-3 rounded-3 fw-medium" value="{{ dob }}" readonly />
-          </div>
-          <div>
-            <label class="form-label text-muted small fw-bold">PRIMARY BUDGET</label>
-            <div class="input-group">
-              <span class="input-group-text bg-light border-0 fw-bold text-primary">UGX</span>
-              <input type="text" class="form-control bg-light border-0 py-3 rounded-end-3 fw-bold text-primary" value="{{ '{:,.0f}'.format(total_budget) }}" readonly />
-            </div>
-          </div>
+    <div class="profile-main-content">
+      <div class="d-flex justify-content-between align-items-center mb-5">
+        <h4 class="fw-extrabold mb-0 text-dark">Account Settings</h4>
+        <div class="text-end">
+          <p class="text-muted small fw-bold mb-0">{{ day_name.upper() }}</p>
+          <p class="text-primary small fw-bold mb-0">{{ current_date }}</p>
         </div>
       </div>
 
-      <div class="col-md-6">
-        <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-          <h5 class="fw-bold mb-4 text-primary">Account Settings</h5>
-          <form action="{{ url_for('update_profile') }}" method="POST">
-            <div class="mb-3">
-              <label class="form-label text-muted small fw-bold">USERNAME</label>
-              <input type="text" name="username" class="form-control border-1 py-3 rounded-3" value="{{ username }}" />
+      <form action="{{ url_for('update_profile') }}" method="POST">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="fms-input-box opacity-75">
+              <label>Legal Full Name</label>
+              <p>{{ full_name }}</p>
             </div>
-            <div class="mb-4">
-              <label class="form-label text-muted small fw-bold">EMAIL ADDRESS</label>
-              <input type="email" name="email" class="form-control border-1 py-3 rounded-3" value="{{ email }}" />
+          </div>
+          <div class="col-md-6">
+            <div class="fms-input-box">
+              <label>Date of Birth</label>
+              <p>{{ dob }}</p>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-sm">Save Changes</button>
-          </form>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="mt-5 pt-4 border-top">
-      <h6 class="text-danger fw-bold mb-3">Security & Privacy</h6>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary px-4 rounded-3">Reset Password</button>
-        <button class="btn btn-outline-danger px-4 rounded-3">Delete Account</button>
+        <div class="fms-input-box">
+          <label>Username</label>
+          <input type="text" name="username" value="{{ username }}" />
+        </div>
+
+        <div class="fms-input-box mb-4">
+          <label>Email Address</label>
+          <input type="email" name="email" value="{{ email }}" />
+        </div>
+
+        <div class="d-flex gap-3 mt-4">
+          <button type="submit" class="btn btn-fms-primary flex-grow-1 py-3 shadow-lg">Save Changes</button>
+          <button type="button" class="btn btn-light px-4 rounded-4 fw-bold border">
+            <i class="bi bi-shield-lock"></i>
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-5 pt-4 border-top d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="fw-bold text-dark mb-0">Security Zone</h6>
+          <p class="text-muted small mb-0">Manage your privacy and account status.</p>
+        </div>
+        <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold">Deactivate</button>
       </div>
     </div>
   </div>
