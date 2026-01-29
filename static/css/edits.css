@@ -451,36 +451,67 @@ button.btn-financial-intelligence:active {
 }
 
 /* Glass Wrapper for the Toggle: Welcome Card added to the Dashboard for New Users */
+/* 1. Reset the Outer Wrapper - This kills the 'blob' look */
 .glass-switch-wrapper {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  padding: 8px 16px;
-  border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  display: inline-flex !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
-.glass-switch-wrapper:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
+/* 2. Style the Inner Pill - The ONLY container that should have the glass look */
+.glass-toggle-container {
+  background: rgba(255, 255, 255, 0.1) !important; /* Very subtle so blue shows through */
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 50px !important;
+  padding: 6px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.3s ease;
 }
 
-/* Custom White Switch Styling */
-.custom-white-switch.form-check-input {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: rgba(0, 0, 0, 0.89);
-  height: 1.4em;
-  width: 2.6em;
+.glass-toggle-container:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
-.custom-white-switch.form-check-input:checked {
-  background-color: #ffffff;
-  border-color: #ffffff;
+/* 3. The Switch Component - Forces alignment and visibility */
+.finance-switch.form-check-input {
+  width: 2.6em !important;
+  height: 1.4em !important;
+  margin: 0 !important; /* Removes Bootstrap's default alignment issues */
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.3) !important; /* Dark track for depth */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
 }
 
-/* Utility for smooth lifting */
-.hover-lift {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+.finance-switch.form-check-input:checked {
+  background-color: #22c55e !important; /* Emerald Green */
+  border-color: #22c55e !important;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6) !important;
+}
+
+/* 4. Fix Label Text - Ensures it's centered with the switch */
+.glass-toggle-container .form-check-label {
+  line-height: 1 !important;
+  margin: 0 0 0 8px !important; /* Clean left margin only */
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* 5. Primary Button - Standardized Lift */
+.btn-white-action {
+  background-color: #ffffff !important;
+  color: #0d6efd !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
 }

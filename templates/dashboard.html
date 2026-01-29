@@ -66,9 +66,11 @@
             <button onclick="handleWelcomeDismiss()" class="btn btn-white-action fw-bold px-4 py-2 rounded-pill shadow-sm hover-lift">Explore Dashboard</button>
 
             <div class="glass-switch-wrapper hover-lift">
-              <div class="form-check form-switch d-flex align-items-center mb-0">
-                <input class="form-check-input custom-white-switch" type="checkbox" id="dontShowAgain" style="cursor: pointer" />
-                <label class="form-check-label text-white small fw-medium ms-2 mb-0" for="dontShowAgain" style="cursor: pointer"> Don't show again </label>
+              <div class="d-flex align-items-center glass-toggle-container px-3 py-2 rounded-pill shadow-sm">
+                <div class="form-check form-switch p-0 m-0 d-flex align-items-center">
+                  <input class="form-check-input finance-switch" type="checkbox" id="dontShowAgain" role="switch" />
+                  <label class="form-check-label text-white small fw-bold ms-2 mt-1" for="dontShowAgain" style="cursor: pointer; opacity: 0.9"> Don't show again </label>
+                </div>
               </div>
             </div>
           </div>
