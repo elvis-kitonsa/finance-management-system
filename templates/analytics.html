@@ -39,374 +39,299 @@
 
 <!-- Main Analytics Content -->
 <main class="p-4">
-{% if expenses %}
+  {% if not show_empty %}
   <div class="row g-4">
     <div class="col-xl-8">
-
       <!-- Burn Rate Card -->
       <!-- Displays a line chart of cumulative spend over time -->
       <div class="d-flex flex-column gap-4">
-      <div class="card glass-card h-100 border-0 shadow-sm">
-        <div class="p-4">
-          <h5 class="fw-bold">Burn Rate (Cumulative Spend)</h5>
-          <br />
-          <div style="height: 350px; position: relative">
-            <canvas id="burnRateChart"></canvas>
+        <div class="card glass-card h-100 border-0 shadow-sm">
+          <div class="p-4">
+            <h5 class="fw-bold">Burn Rate (Cumulative Spend)</h5>
+            <br />
+            <div style="height: 350px; position: relative">
+              <canvas id="burnRateChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div><br /></div>
+        <!-- Spending by Category Card -->
+        <!-- Displays a doughnut chart of spending by category with a custom legend and insights -->
+        <div class="card glass-card border-0 shadow-sm">
+          <div class="p-4">
+            <h5 class="fw-bold">Spending by Category</h5>
+            <br />
+            <div class="row align-items-center">
+              <div class="col-md-7">
+                <canvas id="categoryChart"></canvas>
+              </div>
+              <div class="col-md-5">
+                <div id="custom-legend" class="mb-4">
+                  {% for category, amount in category_data.items() %}
+                  <div class="d-flex align-items-center mb-2">
+                    <span class="badge rounded-pill me-2" style="background-color: #4e73df; width: 10px; height: 10px; padding: 0">&nbsp;</span>
+                    <span class="text-muted small fw-bold">{{ category }}:</span>
+                    <span class="ms-auto small fw-bold text-dark">UGX {{ "{:,.0f}".format(amount) }}</span>
+                  </div>
+                  {% endfor %}
+                </div>
+
+                <div class="p-3 rounded-3" style="background-color: #f8f9fc; border: 1px dashed #e3e6f0">
+                  <p class="text-uppercase text-muted small fw-black mb-2">Quick Insight</p>
+
+                  <!-- Identify the category with the highest spend
+             and display it as the Primary Drain -->
+                  {% set top_cat = category_data.items()|sort(attribute='1', reverse=true)|first %} {% if top_cat %}
+                  <div class="mb-2">
+                    <span class="small text-muted">Primary Drain:</span>
+                    <div class="fw-bold text-danger">{{ top_cat[0] }}</div>
+                  </div>
+                  {% endif %}
+
+                  <div class="progress" style="height: 8px">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ spend_ratio }}%"></div>
+                  </div>
+                  <small class="text-muted mt-1 d-block">You've saved {{ savings_ratio|round(1) }}% of your total budget.</small>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div><br /></div>
-      <!-- Spending by Category Card -->
-      <!-- Displays a doughnut chart of spending by category with a custom legend and insights -->
-      <div class="card glass-card border-0 shadow-sm">
-      <div class="p-4">
-        <h5 class="fw-bold">Spending by Category</h5>
-        <br />
-        <div class="row align-items-center">
-      <div class="col-md-7">
-        <canvas id="categoryChart"></canvas>
-      </div>
-    <div class="col-md-5">
-    <div id="custom-legend" class="mb-4">
-        {% for category, amount in category_data.items() %}
-        <div class="d-flex align-items-center mb-2">
-            <span class="badge rounded-pill me-2" style="background-color: #4e73df; width: 10px; height: 10px; padding: 0;">&nbsp;</span>
-            <span class="text-muted small fw-bold">{{ category }}:</span>
-            <span class="ms-auto small fw-bold text-dark">UGX {{ "{:,.0f}".format(amount) }}</span>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div class="p-3 rounded-3" style="background-color: #f8f9fc; border: 1px dashed #e3e6f0;">
-        <p class="text-uppercase text-muted small fw-black mb-2">Quick Insight</p>
-        
-        <!-- Identify the category with the highest spend
-             and display it as the Primary Drain -->
-        {% set top_cat = category_data.items()|sort(attribute='1', reverse=true)|first %}
-        {% if top_cat %}
-        <div class="mb-2">
-            <span class="small text-muted">Primary Drain:</span>
-            <div class="fw-bold text-danger">{{ top_cat[0] }}</div>
-        </div>
-        {% endif %}
-
-        <div class="progress" style="height: 8px;">
-    <div class="progress-bar bg-success" role="progressbar" style="width: {{ spend_ratio }}%"></div>
-</div>
-<small class="text-muted mt-1 d-block">You've saved {{ savings_ratio|round(1) }}% of your total budget.</small>
-    </div>
-</div>
-</div>
-      </div>
-    </div>
-    </div>
     </div>
 
     <!-- Summary Cards Column -->
     <div class="col-xl-4">
-
       <!-- Projected Runway Card -->
       <!-- Shows days left until capital hits zero -->
-      <div class="card glass-card border-0 p-4 mb-4 shadow text-white" 
-        data-bs-toggle="modal" 
-        data-bs-target="#runwayInfoModal"
-        style="border-radius: 24px; background-color: #0000ff !important; cursor: pointer; transition: transform 0.2s;">
-          <div class="d-flex justify-content-between align-items-start">
-              <small class="text-white text-uppercase fw-bold" style="letter-spacing: 0.5px;">Projected Runway</small>
-              <i class="bi bi-info-circle"></i>
-          </div>
+      <div class="card glass-card border-0 p-4 mb-4 shadow text-white" data-bs-toggle="modal" data-bs-target="#runwayInfoModal" style="border-radius: 24px; background-color: #0000ff !important; cursor: pointer; transition: transform 0.2s">
+        <div class="d-flex justify-content-between align-items-start">
+          <small class="text-white text-uppercase fw-bold" style="letter-spacing: 0.5px">Projected Runway</small>
+          <i class="bi bi-info-circle"></i>
+        </div>
         <h2 class="fw-bold mb-0 text-white">{{ days_left }} Days</h2>
         <p class="mb-0 small text-white">Until capital hits zero balance (UGX 0)</p>
       </div>
 
       <!-- Average Daily Burn & Spending Efficiency Cards -->
       <!-- Displays average daily spend and efficiency status -->
-      <div class="card border-0 p-4 mb-4 shadow text-white" 
-     data-bs-toggle="modal" 
-     data-bs-target="#burnRateInfoModal"
-     style="border-radius: 24px; background: linear-gradient(135deg, #FF0080 0%, #7928CA 100%); cursor: pointer; transition: transform 0.2s; box-shadow: 0 10px 20px -10px rgba(255, 0, 128, 0.5) !important;"
-     onmouseover="this.style.transform='translateY(-5px)'"
-     onmouseout="this.style.transform='translateY(0)'">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <small class="text-white d-block fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem;">Avg. Daily Burn</small>
+      <div
+        class="card border-0 p-4 mb-4 shadow text-white"
+        data-bs-toggle="modal"
+        data-bs-target="#burnRateInfoModal"
+        style="border-radius: 24px; background: linear-gradient(135deg, #ff0080 0%, #7928ca 100%); cursor: pointer; transition: transform 0.2s; box-shadow: 0 10px 20px -10px rgba(255, 0, 128, 0.5) !important"
+        onmouseover="this.style.transform = 'translateY(-5px)'"
+        onmouseout="this.style.transform = 'translateY(0)'"
+      >
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <small class="text-white d-block fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem">Avg. Daily Burn</small>
             <h3 class="fw-bold mb-0">UGX {{ "{:,.0f}".format(avg_burn) }}</h3>
-        </div>
-        <div class="rounded-circle p-3" style="background: rgba(255, 255, 255, 0.2);">
+          </div>
+          <div class="rounded-circle p-3" style="background: rgba(255, 255, 255, 0.2)">
             <i class="bi bi-fire fs-4"></i>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
-<!-- Spending Efficiency Card -->
-<!-- Displays spending efficiency status with a modal trigger -->
-<!-- The card changes color based on spend_ratio thresholds -->
-<div class="card border-0 p-4 shadow text-white" 
-     data-bs-toggle="modal" 
-     data-bs-target="#efficiencyInfoModal"
-     style="border-radius: 24px; 
+      <!-- Spending Efficiency Card -->
+      <!-- Displays spending efficiency status with a modal trigger -->
+      <!-- The card changes color based on spend_ratio thresholds -->
+      <div
+        class="card border-0 p-4 shadow text-white"
+        data-bs-toggle="modal"
+        data-bs-target="#efficiencyInfoModal"
+        style="border-radius: 24px; 
             cursor: pointer; 
             transition: all 0.3s ease;
             background: {% if spend_ratio < 50 %}linear-gradient(135deg, #00F2FE 0%, #4FACFE 100%)
                         {% elif spend_ratio < 85 %}linear-gradient(135deg, #f6d365 0%, #fda085 100%)
                         {% else %}linear-gradient(135deg, #ff0844 0%, #ffb199 100%){% endif %};
             box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.2) !important;"
-     onmouseover="this.style.transform='translateY(-5px)'"
-     onmouseout="this.style.transform='translateY(0)'">
-    
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <small class="text-white d-block fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem; opacity: 3.9;">Efficiency</small>
-            <h3 class="fw-bold mb-0">
-                {% if spend_ratio < 50 %} Optimized
-                {% elif spend_ratio < 85 %} Moderate
-                {% else %} Critical {% endif %}
-            </h3>
-            <small class="d-block mt-2" style="font-size: 0.75rem; opacity: 1;">
-                {{ "{:,.1f}".format(spend_ratio) }}% of budget used
-            </small>
-        </div>
-        <div class="rounded-circle p-3" style="background: rgba(255, 255, 255, 0.2);">
+        onmouseover="this.style.transform = 'translateY(-5px)'"
+        onmouseout="this.style.transform = 'translateY(0)'"
+      >
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <small class="text-white d-block fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.9rem; opacity: 3.9">Efficiency</small>
+            <h3 class="fw-bold mb-0">{% if spend_ratio < 50 %} Optimized {% elif spend_ratio < 85 %} Moderate {% else %} Critical {% endif %}</h3>
+            <small class="d-block mt-2" style="font-size: 0.75rem; opacity: 1"> {{ "{:,.1f}".format(spend_ratio) }}% of budget used </small>
+          </div>
+          <div class="rounded-circle p-3" style="background: rgba(255, 255, 255, 0.2)">
             <i class="bi {% if spend_ratio < 85 %}bi-lightning-charge{% else %}bi-exclamation-octagon{% endif %} fs-4"></i>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
- <div><br /></div>
-<!-- Daily Safe Limit Display -->
-<!-- Shows the calculated daily safe spending limit -->
-<!-- Simply displays the daily limit based on remaining balance and days left -->
-<div class="card border-0 p-4 shadow text-white mb-4" 
-     data-bs-toggle="modal" 
-     data-bs-target="#dailyLimitInfoModal"
-     style="border-radius: 24px; 
-            background: linear-gradient(135deg, #3d52b1 0%, #764ba2 100%); 
-            cursor: pointer; 
-            transition: transform 0.2s; 
-            box-shadow: 0 10px 20px -10px rgba(118, 75, 162, 0.5) !important;"
-     onmouseover="this.style.transform='translateY(-5px)'"
-     onmouseout="this.style.transform='translateY(0)'">
-
-    <div class="d-flex justify-content-between align-items-start mb-3">
-        <div>
-            <small class="text-white d-block fw-bold text-uppercase" style="letter-spacing: 1.5px; font-size: 0.9rem;">Daily Safe Zone</small>
+      <div><br /></div>
+      <!-- Daily Safe Limit Display -->
+      <!-- Shows the calculated daily safe spending limit -->
+      <!-- Simply displays the daily limit based on remaining balance and days left -->
+      <div
+        class="card border-0 p-4 shadow text-white mb-4"
+        data-bs-toggle="modal"
+        data-bs-target="#dailyLimitInfoModal"
+        style="border-radius: 24px; background: linear-gradient(135deg, #3d52b1 0%, #764ba2 100%); cursor: pointer; transition: transform 0.2s; box-shadow: 0 10px 20px -10px rgba(118, 75, 162, 0.5) !important"
+        onmouseover="this.style.transform = 'translateY(-5px)'"
+        onmouseout="this.style.transform = 'translateY(0)'"
+      >
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <small class="text-white d-block fw-bold text-uppercase" style="letter-spacing: 1.5px; font-size: 0.9rem">Daily Safe Zone</small>
             <h3 class="fw-bold mb-0">UGX {{ "{:,.0f}".format(daily_limit) }}</h3>
-        </div>
-        <div class="rounded-circle p-2" style="background: rgba(255, 255, 255, 0.2);">
+          </div>
+          <div class="rounded-circle p-2" style="background: rgba(255, 255, 255, 0.2)">
             <i class="bi bi-shield-lock-fill fs-5 text-white"></i>
+          </div>
         </div>
-    </div>
-    
-    <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px);">
-        <div class="d-flex justify-content-between align-items-center mb-1">
+
+        <div class="p-3 rounded-4" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px)">
+          <div class="d-flex justify-content-between align-items-center mb-1">
             <small class="text-white">Monthly Window</small>
-            <span class="badge rounded-pill bg-white text-dark px-2" style="font-size: 0.65rem;">
-                {{ days_remaining }} Days Left
-            </span>
-        </div>
-        <p class="small mb-0" style="font-size: 0.8rem; opacity: 0.9;">
-            Stay under this amount every day to keep your status 
+            <span class="badge rounded-pill bg-white text-dark px-2" style="font-size: 0.65rem"> {{ days_remaining }} Days Left </span>
+          </div>
+          <p class="small mb-0" style="font-size: 0.8rem; opacity: 0.9">
+            Stay under this amount every day to keep your status
             <strong class="text-white">{% if spend_ratio < 85 %}Optimized{% else %}Safe{% endif %}</strong>.
-        </p>
-    </div>
-</div>
+          </p>
+        </div>
+      </div>
 
-<!-- Smart Alerts Card -->
-<!-- nstead of just showing numbers, this card "talks" to the user by highlighting the biggest financial risk or opportunity based on their current spending data -->
-<div class="card border-0 p-4 shadow-sm mt-4" 
-     data-bs-toggle="modal" 
-     data-bs-target="#insightsInfoModal"
-     style="border-radius: 24px; 
-            background: #f7e70a; 
-            border: 1px solid #e3e6f0 !important; 
-            cursor: pointer; 
-            transition: transform 0.2s;"
-     onmouseover="this.style.transform='translateY(-5px)'"
-     onmouseout="this.style.transform='translateY(0)'">
-    
-    <div class="d-flex align-items-center mb-3">
-        <div class="rounded-circle p-2 me-3" style="background: rgba(255, 193, 7, 0.1); color: #000000;">
+      <!-- Smart Alerts Card -->
+      <!-- nstead of just showing numbers, this card "talks" to the user by highlighting the biggest financial risk or opportunity based on their current spending data -->
+      <div
+        class="card border-0 p-4 shadow-sm mt-4"
+        data-bs-toggle="modal"
+        data-bs-target="#insightsInfoModal"
+        style="border-radius: 24px; background: #f7e70a; border: 1px solid #e3e6f0 !important; cursor: pointer; transition: transform 0.2s"
+        onmouseover="this.style.transform = 'translateY(-5px)'"
+        onmouseout="this.style.transform = 'translateY(0)'"
+      >
+        <div class="d-flex align-items-center mb-3">
+          <div class="rounded-circle p-2 me-3" style="background: rgba(255, 193, 7, 0.1); color: #000000">
             <i class="bi bi-bell-fill"></i>
+          </div>
+          <h6 class="fw-bold mb-0 text-dark">Budget Insights</h6>
         </div>
-        <h6 class="fw-bold mb-0 text-dark">Budget Insights</h6>
-    </div>
 
-    <div class="space-y-3">
-        <div class="p-3 rounded-4 mb-2" style="background: #b6a510;">
+        <div class="space-y-3">
+          <div class="p-3 rounded-4 mb-2" style="background: #b6a510">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small fw-bold text-white">Velocity Alert</span>
-                <i class="bi bi-graph-up-arrow text-danger small"></i>
+              <span class="small fw-bold text-white">Velocity Alert</span>
+              <i class="bi bi-graph-up-arrow text-danger small"></i>
             </div>
-            <p class="small text-white mb-0">
-                You're spending UGX {{ "{:,.0f}".format(avg_burn) }} daily. At this rate, you'll need a top-up in {{ days_left }} days.
-            </p>
-        </div>
+            <p class="small text-white mb-0">You're spending UGX {{ "{:,.0f}".format(avg_burn) }} daily. At this rate, you'll need a top-up in {{ days_left }} days.</p>
+          </div>
 
-        <div class="p-3 rounded-4" style="background: #b6a510;">
+          <div class="p-3 rounded-4" style="background: #b6a510">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small fw-bold text-white">Primary Drain</span>
-                <i class="bi bi-cart-x text-warning small"></i>
+              <span class="small fw-bold text-white">Primary Drain</span>
+              <i class="bi bi-cart-x text-warning small"></i>
             </div>
             {% set top_cat = category_data.items()|sort(attribute='1', reverse=true)|first %}
-            <p class="small text-white mb-0">
-                {{ top_cat[0] }} is your highest expense this month, taking up {{ ((top_cat[1] / total_spent) * 100)|round(1) }}% of total outflow.
-            </p>
+            <p class="small text-white mb-0">{% if top_cat and total_spent > 0 %} {{ top_cat[0] }} is your highest expense, taking up {{ ((top_cat[1] / total_spent) * 100)|round(1) }}% of total outflow. {% else %} No significant spending patterns detected yet. {% endif %}</p>
+          </div>
         </div>
-    </div>
 
-    <button class="btn btn-link btn-sm w-100 mt-3 text-dark fw-bold text-primary" style="font-size: 0.75rem;">
-        VIEW ALL NOTIFICATIONS <i class="bi bi-arrow-right ms-1"></i>
-    </button>
-</div>
+        <button class="btn btn-link btn-sm w-100 mt-3 text-dark fw-bold text-primary" style="font-size: 0.75rem">VIEW ALL NOTIFICATIONS <i class="bi bi-arrow-right ms-1"></i></button>
+      </div>
     </div>
   </div>
 
-  <!-- If a user is new without any expenses added to the list yet -->
-{% else %}
-    <div class="d-flex flex-column align-items-center justify-content-center text-center py-5" style="min-height: 60vh;">
-        <div class="mb-4">
-            <i class="bi bi-bar-chart-steps text-primary" style="font-size: 5rem; opacity: 0.3;"></i>
-        </div>
-        <h3 class="fw-bold text-dark">No Insights Yet</h3>
-        <p class="text-muted mb-4" style="max-width: 400px;">
-            We need a little bit of data to calculate your burn rate and runway. 
-            Add your first expense on the dashboard to get started!
-        </p>
-        <a href="{{ url_for('dashboard') }}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
-            <i class="bi bi-plus-lg me-2"></i>Go to Dashboard
-        </a>
+  <!-- If a user is new or is without any expenses added to the list yet -->
+  {% else %}
+  <div class="d-flex flex-column align-items-center justify-content-center text-center py-5" style="min-height: 60vh">
+    <div class="mb-4">
+      <i class="bi bi-bar-chart-steps text-primary" style="font-size: 5rem; opacity: 0.3"></i>
     </div>
+    <h3 class="fw-bold text-dark">No Insights Yet</h3>
+    <p class="text-muted mb-4" style="max-width: 400px">We need a little bit of data to calculate your burn rate and runway. Add your first expense on the dashboard to get started!</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm"> <i class="bi bi-plus-lg me-2"></i>Go to Dashboard </a>
+  </div>
   {% endif %}
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // 1. Only run chart logic if we have data to show
+    {% if not show_empty %}
+
     const ctx = document.getElementById('burnRateChart').getContext('2d');
     const rawData = {{ daily_data|tojson }};
     const labels = Object.keys(rawData).sort();
     const dataPoints = labels.map(k => rawData[k]);
 
-    // 1. Vibrant Blue Gradient
+    // Vibrant Blue Gradient
     const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-    gradient.addColorStop(0, 'rgba(0, 0, 255, 0.2)'); 
+    gradient.addColorStop(0, 'rgba(0, 0, 255, 0.2)');
     gradient.addColorStop(1, 'rgba(0, 0, 255, 0)');
 
     new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Cumulative Spend',
-            data: dataPoints,
-            borderColor: '#0000ff',
-            borderWidth: 4, // Thicker line for better visibility
-            backgroundColor: gradient,
-            fill: true,
-            tension: 0.45, // Smoother "Cubic" curves
-            pointRadius: 6,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: '#0000ff',
-            pointBorderWidth: 3,
-            pointHoverRadius: 8,
-            pointHoverBackgroundColor: '#0000ff',
-            pointHoverBorderColor: '#ffffff',
-            pointHoverBorderWidth: 3
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            intersect: false,
-            mode: 'index',
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Cumulative Spend',
+                data: dataPoints,
+                borderColor: '#0000ff',
+                borderWidth: 4,
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.45,
+                pointRadius: 6,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#0000ff',
+                pointBorderWidth: 3
+            }]
         },
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                enabled: true,
-                backgroundColor: 'rgba(26, 29, 31, 0.9)', // Darker, sleek tooltip
-                titleFont: { size: 14, weight: 'bold', family: 'Plus Jakarta Sans' },
-                bodyFont: { size: 13, family: 'Plus Jakarta Sans' },
-                padding: 12,
-                cornerRadius: 12,
-                displayColors: false,
-                callbacks: {
-                    label: (context) => 'Total Spent: UGX ' + context.parsed.y.toLocaleString()
-                }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                border: { display: true },
-                grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
-                ticks: {
-                    callback: v => 'UGX ' + (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v),
-                    font: { family: 'Plus Jakarta Sans', size: 11 },
-                    padding: 10
-                }
-            },
-            x: {
-                border: { display: true },
-                grid: { display: false },
-                ticks: { 
-                    font: { family: 'Plus Jakarta Sans', size: 11 },
-                    padding: 10 
-                }
-            }
-        }
-    }
-});
-
-// 2. Category Doughnut Chart
-    // 1. Get the data from Flask
-const catData = {{ category_data|tojson }};
-
-const ctxDoughnut = document.getElementById('categoryChart').getContext('2d');
-new Chart(ctxDoughnut, {
-    type: 'doughnut',
-    data: {
-        labels: Object.keys(catData), // This adds the 'Words' to the chart
-        datasets: [{
-            data: Object.values(catData),
-            backgroundColor: [
-                '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'
-            ],
-            hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
-            hoverBorderColor: "rgba(234, 236, 244, 1)",
-        }]
-    },
-    options: {
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false // We will build a custom, prettier legend in HTML
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(tooltipItem) {
-                        let value = tooltipItem.raw;
-                        return ` ${tooltipItem.label}: UGX ${value.toLocaleString()}`;
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: (context) => 'Total Spent: UGX ' + context.parsed.y.toLocaleString()
                     }
                 }
             }
+        }
+    });
+
+    // 2. Category Doughnut Chart
+    const catData = {{ category_data|tojson }};
+    const ctxDoughnut = document.getElementById('categoryChart').getContext('2d');
+
+    new Chart(ctxDoughnut, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(catData),
+            datasets: [{
+                data: Object.values(catData),
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796']
+            }]
         },
-        cutout: '70%',
-    }
+        options: {
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // 3. Color palette and Legend logic
+    const colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
+    document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
+        badge.style.backgroundColor = colors[i % colors.length];
+    });
+
+    {% endif %}
+    // ^ This closes the "if not show_empty" check
   });
-  });
-
-  // Color palette matching your chart
-const colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
-
-// Target all the little badges in your legend
-document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
-    badge.style.backgroundColor = colors[i % colors.length];
-});
-</script>
-
 </script>
 
 <!-- Burn Rate Info Modal -->
@@ -414,7 +339,6 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
 <div class="modal fade" id="burnRateInfoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg" style="border-radius: 30px; overflow: hidden">
-      
       <div class="modal-header border-0 p-4 pb-0">
         <h5 class="fw-bold mb-0">Understanding Burn Rate</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -427,18 +351,14 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
               <i class="bi bi-fire fs-1"></i>
             </div>
             <h4 class="fw-bold text-dark">Spending Velocity</h4>
-            <p class="text-muted small">
-              Your <strong>Burn Rate</strong> is the average amount of money you spend per day based on your history.
-            </p>
+            <p class="text-muted small">Your <strong>Burn Rate</strong> is the average amount of money you spend per day based on your history.</p>
           </div>
 
           <div class="col-md-7 ps-md-4">
             <div class="bg-light p-3 rounded-4 mb-3">
               <small class="text-muted d-block mb-2 text-uppercase fw-bold" style="letter-spacing: 0.5px; font-size: 0.65rem">How it's calculated</small>
               <p class="small mb-2">Total Expenses ÷ Days Active</p>
-              <div class="p-2 bg-white rounded border text-center font-monospace small shadow-sm">
-                UGX {{ "{:,.0f}".format(avg_burn) }} / Day
-              </div>
+              <div class="p-2 bg-white rounded border text-center font-monospace small shadow-sm">UGX {{ "{:,.0f}".format(avg_burn) }} / Day</div>
             </div>
 
             <div class="p-3 rounded-4" style="background: #fff5f5">
@@ -460,7 +380,7 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
 <!-- Explains how the Projected Runway is calculated -->
 <div class="modal fade" id="runwayInfoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px">
       <div class="modal-header border-0 p-4 pb-0">
         <h5 class="fw-bold mb-0">Runway Breakdown</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -476,15 +396,17 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
             <span class="fw-bold text-primary">= {{ days_left }} Days</span>
           </div>
         </div>
-<p class="small text-muted">
-  Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_remaining) }}</strong> will last approximately <strong>{{ days_left }}</strong> more days.
-</p>
         <p class="small text-muted">
-          Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_budget) }}</strong> will last approximately <strong>{{ days_left }}</strong> more days.
+          Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_remaining) }}</strong> will last approximately
+          <strong>{{ days_left }}</strong> more days.
+        </p>
+        <p class="small text-muted">
+          Based on your spending over the last few days, you are exhausting your liquid cash at a rate of <strong>UGX {{ "{:,.0f}".format(avg_burn) }}</strong> per day. At this speed, your remaining balance of <strong>UGX {{ "{:,.0f}".format(total_budget) }}</strong> will last approximately
+          <strong>{{ days_left }}</strong> more days.
         </p>
       </div>
       <div class="modal-footer border-0 p-4 pt-0">
-        <button type="button" class="btn btn-fms w-100 py-3 rounded-4 fw-bold" data-bs-dismiss="modal" style="background-color: #0000ff !important; color: white;">Understood</button>
+        <button type="button" class="btn btn-fms w-100 py-3 rounded-4 fw-bold" data-bs-dismiss="modal" style="background-color: #0000ff !important; color: white">Understood</button>
       </div>
     </div>
   </div>
@@ -494,99 +416,96 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
 <!-- Provides insights into spending efficiency -->
 <!-- Displays a popup modal with spending efficiency details -->
 <div class="modal fade" id="efficiencyInfoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 30px;">
-            <div class="modal-header border-0 p-4 pb-0">
-                <h5 class="fw-bold mb-0">Efficiency Breakdown</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="text-center mb-4">
-                    <div class="rounded-circle d-inline-flex p-3 mb-2" style="background: rgba(25, 135, 84, 0.1); color: #198754">
-                        <i class="bi bi-shield-check fs-1"></i>
-                    </div>
-                    <h4 class="fw-bold">Your Budget Health</h4>
-                </div>
-                
-                <div class="bg-light p-3 rounded-4 mb-3">
-                    <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.65rem">Current Status</small>
-                    <p class="small">
-                        You have utilized <strong>{{ spend_ratio|round(1) }}%</strong> of your total allocated budget. 
-                        This calculation compares your total expenses against your starting balance.
-                    </p>
-                </div>
-
-                <div class="row g-2 mt-3">
-                  <div class="col-6">
-                      <div class="border rounded p-2 text-center">
-                          <small class="text-uppercase text-muted" style="font-size: 0.6rem;">Spent</small>
-                          <div class="fw-bold text-danger">UGX {{ "{:,.0f}".format(total_spent) }}</div>
-                      </div>
-                  </div>
-                  <div class="col-6">
-                      <div class="border rounded p-2 text-center">
-                          <small class="text-uppercase text-muted" style="font-size: 0.6rem;">Remaining</small>
-                          <div class="fw-bold text-success">UGX {{ "{:,.0f}".format(total_remaining) }}</div>
-                      </div>
-                  </div>
-                </div>
-            </div>
-            <div class="modal-footer border-0 p-4 pt-0">
-                <button type="button" class="btn btn-dark w-100 py-3 rounded-4 fw-bold" data-bs-dismiss="modal">Close Insight</button>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px">
+      <div class="modal-header border-0 p-4 pb-0">
+        <h5 class="fw-bold mb-0">Efficiency Breakdown</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="text-center mb-4">
+          <div class="rounded-circle d-inline-flex p-3 mb-2" style="background: rgba(25, 135, 84, 0.1); color: #198754">
+            <i class="bi bi-shield-check fs-1"></i>
+          </div>
+          <h4 class="fw-bold">Your Budget Health</h4>
         </div>
+
+        <div class="bg-light p-3 rounded-4 mb-3">
+          <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.65rem">Current Status</small>
+          <p class="small">You have utilized <strong>{{ spend_ratio|round(1) }}%</strong> of your total allocated budget. This calculation compares your total expenses against your starting balance.</p>
+        </div>
+
+        <div class="row g-2 mt-3">
+          <div class="col-6">
+            <div class="border rounded p-2 text-center">
+              <small class="text-uppercase text-muted" style="font-size: 0.6rem">Spent</small>
+              <div class="fw-bold text-danger">UGX {{ "{:,.0f}".format(total_spent) }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="border rounded p-2 text-center">
+              <small class="text-uppercase text-muted" style="font-size: 0.6rem">Remaining</small>
+              <div class="fw-bold text-success">UGX {{ "{:,.0f}".format(total_remaining) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 p-4 pt-0">
+        <button type="button" class="btn btn-dark w-100 py-3 rounded-4 fw-bold" data-bs-dismiss="modal">Close Insight</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Daily Limit Info Modal -->
 <!-- Explains how the Daily Safe Limit is calculated -->
 <div class="modal fade" id="dailyLimitInfoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px">
       <div class="modal-header border-0 p-4 pb-0">
         <div class="d-flex align-items-center">
-            <div class="rounded-3 p-2 me-3" style="background: #667eea; color: white;">
-                <i class="bi bi-cpu-fill"></i>
-            </div>
-            <h5 class="fw-bold mb-0">Daily Limit Logic</h5>
+          <div class="rounded-3 p-2 me-3" style="background: #667eea; color: white">
+            <i class="bi bi-cpu-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-0">Daily Limit Logic</h5>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-4">
         <div class="text-center mb-4">
-            <div class="rounded-circle d-inline-flex p-3 mb-2" style="background: rgba(112, 100, 163, 0.1); color: #0d6efd">
-                <i class="bi bi-calculator fs-1"></i>
-            </div>
-            <p class="text-muted small">This is your "Safe Zone." Spending within this limit ensures you don't hit a zero balance before next month.</p>
+          <div class="rounded-circle d-inline-flex p-3 mb-2" style="background: rgba(112, 100, 163, 0.1); color: #0d6efd">
+            <i class="bi bi-calculator fs-1"></i>
+          </div>
+          <p class="text-muted small">This is your "Safe Zone." Spending within this limit ensures you don't hit a zero balance before next month.</p>
         </div>
 
         <div class="bg-light p-4 rounded-4 mb-3 border">
-    <small class="text-muted d-block mb-3 text-uppercase fw-bold text-center" style="font-size: 0.7rem; letter-spacing: 1px;">Calculation Breakdown</small>
-    <div class="row align-items-center g-0 text-center">
-        <div class="col">
-            <span class="d-block small text-muted">Balance</span>
-            <span class="fw-bold text-primary">UGX {{ "{:,.0f}".format(total_remaining) }}</span>
+          <small class="text-muted d-block mb-3 text-uppercase fw-bold text-center" style="font-size: 0.7rem; letter-spacing: 1px">Calculation Breakdown</small>
+          <div class="row align-items-center g-0 text-center">
+            <div class="col">
+              <span class="d-block small text-muted">Balance</span>
+              <span class="fw-bold text-primary">UGX {{ "{:,.0f}".format(total_remaining) }}</span>
+            </div>
+            <div class="col-auto">
+              <i class="bi bi-divide text-muted fs-4"></i>
+            </div>
+            <div class="col">
+              <span class="d-block small text-muted">Days Left</span>
+              <span class="fw-bold text-dark">{{ days_remaining }} Days</span>
+            </div>
+            <div class="col-auto">
+              <div class="text-primary fw-bold fs-4 mx-3">=</div>
+            </div>
+            <div class="col">
+              <span class="d-block small text-muted">Daily Limit</span>
+              <span class="fw-bold text-primary">UGX {{ "{:,.0f}".format(daily_limit) }}</span>
+            </div>
+          </div>
         </div>
-        <div class="col-auto">
-            <i class="bi bi-divide text-muted fs-4"></i>
-        </div>
-        <div class="col">
-            <span class="d-block small text-muted">Days Left</span>
-            <span class="fw-bold text-dark">{{ days_remaining }} Days</span>
-        </div>
-        <div class="col-auto">
-            <div class="text-primary fw-bold fs-4 mx-3">=</div>
-        </div>
-        <div class="col">
-            <span class="d-block small text-muted">Daily Limit</span>
-            <span class="fw-bold text-primary">UGX {{ "{:,.0f}".format(daily_limit) }}</span>
-        </div>
-    </div>
-</div>
-        
-        <div class="p-3 rounded-4" style="background: #eef2ff; border-left: 4px solid #0d6efd;">
-            <small class="fw-bold d-block mb-1 text-primary">Pro Tip</small>
-            <p class="small mb-0 text-dark">If you spend <strong>less</strong> than this today, your Daily Limit for tomorrow will actually <strong>increase</strong>!</p>
+
+        <div class="p-3 rounded-4" style="background: #eef2ff; border-left: 4px solid #0d6efd">
+          <small class="fw-bold d-block mb-1 text-primary">Pro Tip</small>
+          <p class="small mb-0 text-dark">If you spend <strong>less</strong> than this today, your Daily Limit for tomorrow will actually <strong>increase</strong>!</p>
         </div>
       </div>
       <div class="modal-footer border-0 p-4 pt-0">
@@ -600,58 +519,50 @@ document.querySelectorAll('#custom-legend .badge').forEach((badge, i) => {
 <!-- pops up when the Smart Alerts yellow card in the Analytics page is clicked -->
 <div class="modal fade" id="insightsInfoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px;">
-      
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 30px">
       <div class="modal-header border-0 p-4 pb-0">
         <div class="d-flex align-items-center">
-            <div class="rounded-3 p-2 me-3" style="background: #f7e70a; color: #000;">
-                <i class="bi bi-lightbulb-fill"></i>
-            </div>
-            <h5 class="fw-bold mb-0">Financial Intelligence</h5>
+          <div class="rounded-3 p-2 me-3" style="background: #f7e70a; color: #000">
+            <i class="bi bi-lightbulb-fill"></i>
+          </div>
+          <h5 class="fw-bold mb-0">Financial Intelligence</h5>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body p-4">
-    <div class="text-center mb-4 p-3 rounded-4" style="background: #fffdf0; border: 1px solid #f7e70a;">
-        <p class="text-muted small mb-1 text-uppercase fw-bold">Current Savings Ratio</p>
-        <h2 class="fw-bold text-dark mb-0">{{ savings_ratio|round(1) }}%</h2>
-        <p class="small text-muted mb-0">of your total budget remains unspent</p>
-    </div>
+        <div class="text-center mb-4 p-3 rounded-4" style="background: #fffdf0; border: 1px solid #f7e70a">
+          <p class="text-muted small mb-1 text-uppercase fw-bold">Current Savings Ratio</p>
+          <h2 class="fw-bold text-dark mb-0">{{ savings_ratio|round(1) }}%</h2>
+          <p class="small text-muted mb-0">of your total budget remains unspent</p>
+        </div>
 
-    <div class="space-y-4">
-        <div class="d-flex gap-3 mb-4">
+        <div class="space-y-4">
+          <div class="d-flex gap-3 mb-4">
             <div class="text-warning"><i class="bi bi-exclamation-triangle-fill fs-4"></i></div>
             <div>
-                <h6 class="fw-bold mb-1">Top Expense Warning</h6>
-                {% set top_cat = category_data.items()|sort(attribute='1', reverse=true)|first %}
-                <p class="small text-muted mb-0">
-                    Your spending in <strong>{{ top_cat[0] if top_cat else 'General' }}</strong> is the primary reason for your current burn rate. Consider a "No-Spend Day" to recover.
-                </p>
+              <h6 class="fw-bold mb-1">Top Expense Warning</h6>
+              {% set top_cat = category_data.items()|sort(attribute='1', reverse=true)|first %}
+              <p class="small text-muted mb-0">Your spending in <strong>{{ top_cat[0] if top_cat else 'General' }}</strong> is the primary reason for your current burn rate. Consider a "No-Spend Day" to recover.</p>
             </div>
-        </div>
+          </div>
 
-        <div class="d-flex gap-3">
+          <div class="d-flex gap-3">
             <div class="text-info"><i class="bi bi-info-square-fill fs-4"></i></div>
             <div>
-                <h6 class="fw-bold mb-1">Runway Extension</h6>
-                {# Calculate 80% of current daily burn to show a 'Saving' scenario #}
-                {% set target_burn = (avg_burn * 0.8) %}
-                {% set extended_days = (total_budget / target_burn)|round(0, 'floor') if target_burn > 0 else 0 %}
-                <p class="small text-muted mb-0">
-                    By reducing daily spend to <strong>UGX {{ "{:,.0f}".format(target_burn) }}</strong>, you can extend your runway from {{ days_left }} days to <strong>{{ extended_days|int }} days</strong>.
-                </p>
+              <h6 class="fw-bold mb-1">Runway Extension</h6>
+              {% set target_burn = (avg_burn * 0.8) %} {# Check for zero to prevent division errors #} {% if target_burn > 0 %} {% set extended_days = (total_budget / target_burn)|round(0, 'floor') %}
+              <p class="small text-muted mb-0">By reducing daily spend to <strong>UGX {{ "{:,.0f}".format(target_burn) }}</strong>, you can extend your runway from {{ days_left }} days to <strong>{{ extended_days|int }} days</strong>.</p>
+              {% else %}
+              <p class="small text-muted mb-0">Maintain your current zero-spend streak to keep your budget intact!</p>
+              {% endif %}
             </div>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
       <div class="modal-footer border-0 p-4 pt-0">
-        <button type="button" 
-                class="btn btn-financial-intelligence w-100 py-3 rounded-4 fw-bold shadow-sm" 
-                data-bs-dismiss="modal">
-            Understood
-        </button>
+        <button type="button" class="btn btn-financial-intelligence w-100 py-3 rounded-4 fw-bold shadow-sm" data-bs-dismiss="modal">Understood</button>
       </div>
     </div>
   </div>

@@ -423,97 +423,95 @@ def analytics():
     current_day = now.strftime('%A')
     current_date = now.strftime('%b %d, %Y')
 
-    # NEW: Initialize category_data for the doughnut chart
-    category_data = defaultdict(float)
-    
-    # Handle empty state to avoid division by zero
-    if not expenses:
-        return render_template('analytics.html', 
-                               initials=initials,
-                               current_day=current_day,
-                               current_date=current_date,
-                               expenses=[], # Keep as empty list
-                               daily_data={},
-                               category_data={'No Data': 0}, # Add a placeholder 
-                               total_spent=0, 
-                               avg_burn=0, 
-                               projected_date="N/A", 
-                               days_left=0, 
-                               savings_ratio=100, # Added: 100% of budget is "saved" if nothing is spent
-                               spend_ratio=0,     # Added: 0% spent
-                               days_remaining=max(1, calendar.monthrange(now.year, now.month)[1] - now.day),
-                               daily_limit=current_user.total_balance / max(1, calendar.monthrange(now.year, now.month)[1] - now.day),
-                               total_budget=current_user.total_balance,
-                               total_remaining=current_user.total_balance)
-
-    # 3. Process Transactions for the Cumulative Burn Graph
+    # 3. Set these as starting values
     daily_data = defaultdict(float)
+    category_data = defaultdict(float) # <--- This handles 'Food' or any other category automatically, use defaultdict here to prevent KeyErrors
     cumulative_burn = 0
-    
-    # We sort explicitly to ensure the line graph moves forward in time
-    sorted_expenses = sorted(expenses, key=lambda x: x.date_to_handle)
+    avg_daily_burn = 0
+    projected_date_str = "N/A"
+    days_left = 0
+    savings_ratio = 100
+    spend_ratio = 0
+    effective_balance = current_user.total_balance
 
-    for e in sorted_expenses:
-        date_str = e.date_to_handle.strftime('%Y-%m-%d')
+    # ADD THESE TWO LINES HERE (The Fix for your UnboundLocalError)
+    days_remaining = 1 
+    daily_limit = 0
+    # ------------------------------------
+    
+    # This is the "Switch"
+    show_empty = len(expenses) == 0
+
+    if not show_empty:
+
+        # 3. Process Transactions for the Cumulative Burn Graph
+        daily_data = defaultdict(float)
+        cumulative_burn = 0
+    
+        # We sort explicitly to ensure the line graph moves forward in time
+        sorted_expenses = sorted(expenses, key=lambda x: x.date_to_handle)
+
+        for e in sorted_expenses:
+            date_str = e.date_to_handle.strftime('%Y-%m-%d')
+            
+            # We only 'burn' money on spending, not savings allocations
+            if e.category != 'Savings':
+
+                # 1. DEFINE THE AMOUNT HERE
+                amount = abs(e.amount)
+
+                # Use abs() to ensure the graph trends UPWARD even if stored as negative
+                cumulative_burn += abs(e.amount)
+
+                # NEW: Group amounts by category for the doughnut chart
+                category_data[e.category] += amount
         
-        # We only 'burn' money on spending, not savings allocations
-        if e.category != 'Savings':
+                # Capture the cumulative state at the end of this specific date
+                daily_data[date_str] = cumulative_burn 
 
-            # 1. DEFINE THE AMOUNT HERE
-            amount = abs(e.amount)
-
-            # Use abs() to ensure the graph trends UPWARD even if stored as negative
-            cumulative_burn += abs(e.amount)
-
-            # NEW: Group amounts by category for the doughnut chart
-            category_data[e.category] += amount
+        # 4. Burn Rate & Runway Calculations
+        # Calculate days since the very first expense record
+        start_date = sorted_expenses[0].date_to_handle.date()
+        today = datetime.utcnow().date()
+        days_elapsed = (today - start_date).days + 1 # +1 to avoid division by zero on day one
         
-        # Capture the cumulative state at the end of this specific date
-        daily_data[date_str] = cumulative_burn 
+        # Avg Daily Burn = Total Outflow / Days Active
+        avg_daily_burn = cumulative_burn / days_elapsed
+    
+        # 4. THE FIX: Calculate Real Remaining Cash
+        # Matches Dashboard: Total Set - (Spent + Saved)
+        total_spent_so_far = sum(abs(e.amount) for e in expenses if e.category != 'Savings')
+        total_saved_so_far = sum(abs(e.amount) for e in expenses if e.category == 'Savings')
+        effective_balance = current_user.total_balance - (total_spent_so_far + total_saved_so_far)
 
-    # 4. Burn Rate & Runway Calculations
-    # Calculate days since the very first expense record
-    start_date = sorted_expenses[0].date_to_handle.date()
-    today = datetime.utcnow().date()
-    days_elapsed = (today - start_date).days + 1 # +1 to avoid division by zero on day one
-    
-    # Avg Daily Burn = Total Outflow / Days Active
-    avg_daily_burn = cumulative_burn / days_elapsed
-    
-    # 4. THE FIX: Calculate Real Remaining Cash
-    # Matches Dashboard: Total Set - (Spent + Saved)
-    total_spent_so_far = sum(abs(e.amount) for e in expenses if e.category != 'Savings')
-    total_saved_so_far = sum(abs(e.amount) for e in expenses if e.category == 'Savings')
-    effective_balance = current_user.total_balance - (total_spent_so_far + total_saved_so_far)
+        # 5. Calculate Real Runway
+        # 625,000 / 491,667 = ~1.27 Days
+        if avg_daily_burn > 0:
+            days_left = round(effective_balance / avg_daily_burn) # Use 'effective_balance' because that's what you defined
+            projected_date = now + timedelta(days=days_left)
+            projected_date_str = projected_date.strftime('%d %b, %Y')
+        else:
+            days_left = 0
+            projected_date_str = "N/A"
+
+        # 6. Savings Ratio Calculation
+        # Your "Budget" is the original total_balance you set
+        starting_budget = current_user.total_balance
+        
+        if starting_budget > 0:
+            # Savings Ratio = (Remaining Cash + Savings) / Total Starting Budget
+            # This shows what % of your original money isn't "burned" yet
+            savings_ratio = ((effective_balance + total_saved_so_far) / starting_budget) * 100
+            spend_ratio = 100 - savings_ratio
+        else:
+            savings_ratio = 0
+            spend_ratio = 0
 
     # --- ADD THIS NEW LOGIC HERE ---
-    days_in_month = calendar.monthrange(now.year, now.month)[1]
-    days_remaining = max(1, days_in_month - now.day) 
-    daily_limit = effective_balance / days_remaining
-    # -------------------------------
-
-    # 5. Calculate Real Runway
-    # 625,000 / 491,667 = ~1.27 Days
-    if avg_daily_burn > 0:
-        days_left = round(effective_balance / avg_daily_burn) # Use 'effective_balance' because that's what you defined
-        projected_date = now + timedelta(days=days_left)
-        projected_date_str = projected_date.strftime('%d %b, %Y')
-    else:
-        days_left = 0
-        projected_date_str = "N/A"
-
-    # 6. Savings Ratio Calculation
-    # Your "Budget" is the original total_balance you set
-    starting_budget = current_user.total_balance
-    
-    if starting_budget > 0:
-        # Savings Ratio = (Remaining Cash + Savings) / Total Starting Budget
-        # This shows what % of your original money isn't "burned" yet
-        savings_ratio = ((effective_balance + total_saved_so_far) / starting_budget) * 100
-        spend_ratio = 100 - savings_ratio
-    else:
-        savings_ratio = 0
-        spend_ratio = 0
+        days_in_month = calendar.monthrange(now.year, now.month)[1]
+        days_remaining = max(1, days_in_month - now.day) 
+        daily_limit = effective_balance / days_remaining
+        # -------------------------------
 
     return render_template('analytics.html', 
                            initials=initials,
@@ -530,7 +528,8 @@ def analytics():
                            daily_limit=daily_limit,
                            category_data=dict(category_data),
                            total_budget=current_user.total_balance, # stays fixed at the set amount - 2.5M
-                           total_remaining=effective_balance) # actual balance with some expenses added
+                           total_remaining=effective_balance, # actual balance with some expenses added
+                           show_empty=show_empty) # <--- ADD THIS LINE
 
 # PRINT RECEIPT ROUTE - Used in the accounts.html section
 # Generates printable expense reports based on user selection
